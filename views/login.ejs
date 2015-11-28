@@ -18,17 +18,23 @@
     <![endif]-->
   </head>
   <body>
-    <h1>Customer Home</h1>
-    <br><br>
-    <a href="newReservation">Make a new Reservation</a>
-    <br>
-    <a href="updateReservation">Update Your Reservation</a>
-    <br>
-    <a href="cancelReservation">Cancel Reservation</a>
-    <br>
-    <a href="newFeedback">Provide Feedback</a>
-    <br>
-    <a href="viewFeedback">View Feedback</a>
+    <h1>Login</h1>
+    <!-- show any messages that come back with authentication -->
+    <% if (message.length > 0) { %>
+        <div class="alert alert-danger"><%= message %></div>
+    <% } %>
+
+    <form method='post'>
+      <div class="form-group">
+        <label for="exampleInputEmail1">Username</label>
+        <input type="username" class="form-control" name='username' placeholder="Username" required>
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1">Password</label>
+        <input type="password" class="form-control" name='password' placeholder="Password" required>
+      </div>
+      <button type="submit" class="btn btn-default">Submit</button>
+    </form>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
