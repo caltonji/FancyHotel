@@ -3,6 +3,7 @@ var mysql = require('mysql');
 // load all the things we need
 var LocalStrategy   = require('passport-local').Strategy;
 
+var sqlCreator = require('../SqlStatementCreator');
 
 
 // First you need to create a connection to the db
@@ -13,6 +14,7 @@ var connection = mysql.createConnection({
   database : "cs4400_Group_6"
 });
 
+
 connection.connect(function(err){
   if(err){
     console.log('Error connecting to Db');
@@ -22,7 +24,6 @@ connection.connect(function(err){
   console.log('Connection established');
 });
 
-//not sure where connection termination should happen
 // connection.end(function(err) {
 // 	console.log("connection terminated");
 // 	// The connection is terminated gracefully
@@ -44,11 +45,10 @@ module.exports = function(passport) {
 
     // used to deserialize the user
     passport.deserializeUser(function(username, done) {
-        connection.query("SELECT * from CUSTOMER where Username = '" + username + "';",function(err,rows){	
+        connection.query(sqlCreator.findCustomer(username),function(err,rows){	
 			done(err, rows[0]);
 		});
     });
-
     // =========================================================================
     // LOCAL SIGNUP ============================================================
     // =========================================================================
@@ -71,7 +71,7 @@ module.exports = function(passport) {
 
         
         //if emails need to be unique as well then this query needs to end with  OR Email = " + req.body.email + "';"
-        connection.query("SELECT * from CUSTOMER where Username = '" + username + "';", function(err,rows) {
+        connection.query(sqlCreator.findCustomer(username), function(err,rows) {
 			console.log(rows);
 			console.log("above row object");
 			if (err)
@@ -84,8 +84,7 @@ module.exports = function(passport) {
 				newUserMysql.Username = username;
                 newUserMysql.Password = password; // use the generateHash function in our user model
 			
-				var insertQuery = "INSERT INTO CUSTOMER ( Username, Password, Email ) values ('" + username + "','" + password + "','" + req.body.email + "');";
-				console.log(insertQuery);
+				var insertQuery = sqlCreator.newCustomer(username, password,req.body.email);
 				connection.query(insertQuery,function(err,rows){
 					if (err) throw err;
 					return done(null, newUserMysql);
@@ -110,7 +109,9 @@ module.exports = function(passport) {
 
         
         //if emails need to be unique as well then this query needs to end with  OR Email = " + req.body.email + "';"
-        connection.query("SELECT * from CUSTOMER where Username = '" + username + "';", function(err,rows) {
+        console.log("checking sql creator");
+        console.log(sqlCreator.findCustomer(username));
+        connection.query(sqlCreator.findCustomer(username), function(err,rows) {
 			console.log(rows);
 			console.log("above row object");
 			if (err)
