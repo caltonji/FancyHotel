@@ -44,7 +44,7 @@ module.exports = function(app, passport) {
         res.render("customer/find_room.ejs", { message: req.flash('reservationMessage') });
     });
 
-		app.get("/availablerooms", isLoggedIn, function(req,res) {
+	app.get("/availablerooms", function(req,res) {
         res.render("customer/make_reservation.ejs", { message: req.flash('reservationMessage') });
     });
 
