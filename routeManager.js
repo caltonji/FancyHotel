@@ -36,12 +36,16 @@ module.exports = function(app, passport) {
     }));
 
     //customer get routes
-	app.get("/home", isLoggedIn, function(req,res) {
-		res.render("customer/customer_home.ejs", { username: req.user.Username});
-	});
+		app.get("/home", isLoggedIn, function(req,res) {
+			res.render("customer/customer_home.ejs", { username: req.user.Username});
+		});
 
     app.get("/findRoom", isLoggedIn, function(req,res) {
         res.render("customer/find_room.ejs", { message: req.flash('reservationMessage') });
+    });
+
+		app.get("/availablerooms", isLoggedIn, function(req,res) {
+        res.render("customer/make_reservation.ejs", { message: req.flash('reservationMessage') });
     });
 
 
@@ -60,7 +64,7 @@ module.exports = function(app, passport) {
 // route middleware to make sure a user is logged in
 function isLoggedIn(req, res, next) {
 
-    // if user is authenticated in the session, carry on 
+    // if user is authenticated in the session, carry on
     if (req.isAuthenticated())
         return next();
 
