@@ -14,7 +14,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Make a Reservation</title>
+    <title>Reservation Details</title>
 
     <!-- Bootstrap -->
     <link href="stylesheets/bootstrap.min.css" rel="stylesheet">
@@ -27,7 +27,7 @@
     <![endif]-->
   </head>
   <body>
-    <h1>Make a Reservation</h1>
+    <h1>Reservation Details</h1>
 
     <!-- show any messages that come back with authentication -->
     <% if (message.length > 0) { %>
@@ -66,30 +66,35 @@
              <input type="checkbox" name="select_room" value="selected"><br>
            </form></td>
         </tr>
-        <tr>
-        	<td>309</td>
-        	<td>Family</td>
-        	<td>4</td>
-        	<td>170</td>
-          <td>50</td>
-          <td><form action="">
-             <input type="checkbox" name="select_room" value="selected"><br>
-           </form></td>
-        </tr>
-        <tr>
-        	<td>101</td>
-        	<td>Standard</td>
-        	<td>2</td>
-        	<td>100</td>
-          <td>70</td>
-          <td><form action="">
-             <input type="checkbox" name="select_room" value="selected"><br>
-           </form></td>
-        </tr>
         </tbody></table>
         <br>
-        <button type="submit" class="btn btn-default">Reserve Selected Rooms</button>
+        <div class="form-group">
+          <label for="room_search_startdate">Start Date</label>
+          <input type="date" class="form-control" id="room_search_startdate" name="startDate" placeholder="Start Date" required>
+        </div>
+        <div class="form-group">
+          <label for="room_search_enddate">End Date</label>
+          <input type="date" class="form-control" id="room_search_enddate" name="endDate" placeholder="End Date" required>
+        </div>
+        <div class="form-group">
+          <label for="payment_info">Select Payment Information </label>
+          <a href="addCard"> Add a Card</a>
+          <select class="form-control" name="payment_info" id="payment_info" required placeholder="Select Card">
+            <option value="">Select Card</option>
+            <option value="card1">Brad-Credit Card-4152</option>
+            <option value="card2">Brad-Debit Card-2419</option>
+          </select>
+        </div>
+        <br>
+        <button onclick="roomConfirmation()" type="submit" class="btn btn-default">Finish Reservation</button>
     </div>
+
+    <!-- display reservation ID -->
+    <script>
+      function roomConfirmation() {
+          alert("Your reservation ID is 1234. Please save this ID for all further communication. ");
+      }
+    </script>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

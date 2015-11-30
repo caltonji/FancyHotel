@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Update Your Reservation</title>
+
+    <!-- Bootstrap -->
+    <link href="stylesheets/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <h1>Update Your Reservation</h1>
+    <p>Please enter your updated reservation dates to search for available rooms.<p>
+
+    <!-- show any messages that come back with authentication -->
+    <% if (message.length > 0) { %>
+        <div class="alert alert-danger"><%= message %></div>
+    <% } %>
+
+    <br>
+    <div class="container">
+      <form class="form-horizontal" role="form">
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="curStartDate">Current Start Date: render date here</label>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="curEndDate">Current End Date: render date here</label>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="newStartDate">New Start Date</label>
+            <div class="col-sm-10">
+              <input type="date" class="form-control" id="newStartDate" name="newStartDate" placeholder="New Start Date" required>
+            </div>
+        </div>  <div class="form-group">
+            <label class="control-label col-sm-2" for="newEndDate">New End Date</label>
+              <div class="col-sm-10">
+                <input type="date" class="form-control" id="newEndDate" name="newEndDate" placeholder="New End Date" required>
+              </div>
+          </div>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="submit" class="btn btn-default">Search Availability</button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+  </body>
+</html>
