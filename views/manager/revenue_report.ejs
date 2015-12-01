@@ -14,7 +14,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Revenue Report</title>
+    <title>Popular Room Category Report</title>
 
     <!-- Bootstrap -->
     <link href="stylesheets/bootstrap.min.css" rel="stylesheet">
@@ -27,7 +27,7 @@
     <![endif]-->
   </head>
   <body>
-    <h1>Revenue Report</h1>
+    <h1>Popular Room Category Report</h1>
 
     <!-- show any messages that come back with authentication -->
     <% if (message.length > 0) { %>
@@ -35,28 +35,32 @@
     <% } %>
 
     <br>
-
     <div class="container">
-      <table class="w3-table-all" style="width:100%">
-        <tbody><tr>
-        	<th>Month</th>
-        	<th>Location</th>
-          <th>Total Revenue</th>
-        </tr>
-        <tr>
-        	<td>August</td>
-        	<td>Atlanta<br>Charlotte<br>Miami<br>Orlando<br>Savannah<br></td>
-        	<td>10000<br>23000<br>900<br>3200<br>2100</td>
-        </tr>
-        <tr>
-          <td>September</td>
-          <td>Atlanta<br>Charlotte<br>Miami<br>Orlando<br>Savannah<br></td>
-          <td>11700<br>2600<br>12000<br>45000<br>21000</td>
-        </tr>
-        </tbody></table>
-        <br>
-        <button type="submit" class="btn btn-default">View another Report</button>
-    </div>
+        <% if (revenuereports.length) { %>
+          <table class="w3-table-all" style="width:100%">
+            <tbody>
+                <tr>
+                  <th>Month</th>
+                  <th>Location</th>
+                  <th>Total Revenue</th>
+                </tr>
+                <% for (var month in revenuereports[0]) { %>
+                    <% var revenuereport = revenuereports[0][month]; %>
+                    <tr class = "revenuereports">
+                      <% for (var item in revenuereport) { %>
+                        <% var element = revenuereport[item]; %>
+                          <td><%= month%></td>
+                          <td><%= element.Location%></td>
+                          <td><%= element.total_revenue%></td>
+                        </tr>
+                    <% } %>
+                  <% } %>
+                </tbody>
+              </table>
+              <% } %>
+              <br>
+                <button type="submit" class="btn btn-default">View another Report</button>
+          </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

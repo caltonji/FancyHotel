@@ -37,36 +37,30 @@
     <br>
 
     <div class="container">
-      <table class="w3-table-all" style="width:100%">
-        <tbody><tr>
-        	<th>Month</th>
-        	<th>Location</th>
-        	<th>Total # of Reservations</th>
-        </tr>
-        <tr>
-        	<td>August</td>
-        	<td>Atlanta<br>Charlotte<br>Miami<br>Orlando<br>Savannah<br></td>
-        	<td>8<br>10<br>15<br>29<br>20</td>
-        </tr>
-        <tr>
-        	<td>September</td>
-        	<td>Atlanta<br>Charlotte<br>Miami<br>Orlando<br>Savannah<br></td>
-        	<td>10<br>15<br>24<br>40<br>31</td>
-        </tr>
-        <tr>
-        	<td>October</td>
-        	<td>Atlanta<br>Charlotte<br>Miami<br>Orlando<br>Savannah<br></td>
-        	<td>17<br>25<br>9<br>32<br>21</td>
-        </tr>
-        <tr>
-        	<td>November</td>
-        	<td>Atlanta<br>Charlotte<br>Miami<br>Orlando<br>Savannah<br></td>
-        	<td>23<br>10<br>12<br>54<br>21</td>
-        </tr>
-        </tbody></table>
-        <br>
-        <button type="submit" class="btn btn-default">View another Report</button>
-    </div>
+        <% if (reservationreports.length) { %>
+          <table class="w3-table-all" style="width:100%">
+            <tbody>
+                <tr>
+                  <th>Month</th>
+                  <th>Location</th>
+                  <th>total_reservations</th>
+                </tr>
+                <% for (var month in reservationreports[0]) { %>
+                    <% var reservationreport = reservationreports[0][month]; %>
+                    <tr class = "reservationreports">
+                      <% for (var item in reservationreport) { %>
+                        <% var element = reservationreport[item]; %>
+                          <td><%= month%></td>
+                          <td><%= element.Location%></td>
+                          <td><%= element.total_reservations%></td>
+                        </tr>
+                    <% } %>
+                  <% } %>
+                </tbody>
+              </table>
+              <% } %>
+                <button type="submit" class="btn btn-default">View another Report</button>
+          </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

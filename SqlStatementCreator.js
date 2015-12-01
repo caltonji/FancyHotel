@@ -41,10 +41,22 @@ exports.createReservation = function(startDate, endDate, totalCost, isCancelled,
 		+ "," + mysql.escape(cardNo) + "," + mysql.escape(username) + ");";
 }
 
-exports.deleteReservation = function(reservationID, username) {
-	return "DELETE FROM RESERVATION WHERE Reservation_ID = " + mysql.escape(reservationID)
-		+ "AND username = " + mysql.escape(username) + ";";
+exports.cancelReservation = function(reservationID, username) {
+	return "UPDATE RESERVATION SET Is_cancelled = " + mysql.escape(1) + " WHERE Reservation_Id = " + mysql.escape(reservationID)
+			+ " AND username = " + mysql.escape(username) + ";";
+} //need to update this to add a cancellation date
+
+exports.updateReservation = function(reservationID, username, new_Start_date, new_End_date) {
+	return "UPDATE RESERVATION SET  Start_date =  " + mysql.escape(new_Start_date) + ", End_date =  "
+		+ mysql.escape(new_End_date) + " WHERE  Reservation_ID = " + mysql.escape(reservationID) + " AND username = "
+		+ mysql.escape(username) + ";";
 }
+//change start and end date of a reservation. Pass in reservationID, username, new dates
+
+//need to check if room is available with 1 query THEN update reservation
+
+//check for available room query
+
 
 exports.findReview = function(location) {
 	return "SELECT Rating, Comment FROM HOTEL_REVIEW WHERE Location = " + mysql.escape(location) + ";";
@@ -80,15 +92,19 @@ exports.searchRooms = function(roomArray) { //TODO: test this?
 	return query;
 }
 
+exports.searchAvailableRooms = function(start_date, end_date, location) {
+	return sele
+}
+
 exports.createReservationReport = function(month_number) { //This will need to be run once for each month
 	return "SELECT location, COUNT( * ) AS location_count FROM RESERVATION NATURAL JOIN HAS_ROOM WHERE MONTH(Start_date) = "
-		+ mysql.escape(month_number) + "AND Is_cancelled = " + mysql.escape(0) + " GROUP BY location";
+		+ mysql.escape(month_number) + " AND Is_cancelled = " + mysql.escape(0) + " GROUP BY location";
 } //Returns tuples in the form (location, location_count)
 
 exports.createPopularRoomReport = function(month_number) { //This will need to be run once for each month
-	return "SELECT location, Room_category, MAX(sub.counter)FROM (SELECT location, Room_category, COUNT( * ) AS counter"
+	return "SELECT location, Room_category, MAX(sub.counter) AS total_rooms FROM (SELECT location, Room_category, COUNT( * ) AS counter"
 		+ " FROM ROOM NATURAL JOIN RESERVATION NATURAL JOIN HAS_ROOM WHERE MONTH( Start_date ) =  " + mysql.escape(month_number)
-		+ "AND Is_cancelled = " + mysql.escape(0) + " GROUP BY location, Room_category) AS sub GROUP BY location;";
+		+ " AND Is_cancelled = " + mysql.escape(0) + " GROUP BY location, Room_category) AS sub GROUP BY location;";
 } //Returns tuples in the form (location, Room_category, count)
 
 exports.createRevenueReport = function(month_number) { //This will need to be run once for each month

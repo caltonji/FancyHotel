@@ -6,6 +6,8 @@ var path = __dirname + '/views/';
 
 var customerRoutes = require('./routes/customerRoutes');
 var flashFills = require('./routes/customerFlashFills');
+var managerFlashFills = require('./routes/managerFlashFills');
+var managerRoutes= require('./routes/managerRoutes');
 
 // app/routes.js
 module.exports = function(app, passport) {
@@ -130,15 +132,18 @@ module.exports = function(app, passport) {
     });
 
     app.get("/reservationreport", function(req,res) {
-        res.render("manager/reservation_report.ejs", { message: req.flash('reservationMessage') });
+				managerFlashFills.fillReservationreport(req,res);
+        res.render("manager/reservation_report.ejs", { reservationreports : req.flash('reservationreports'),message: req.flash('reservationMessage') });
     });
 
     app.get("/poproomreport", function(req,res) {
-        res.render("manager/popularRoom_report.ejs", { message: req.flash('reservationMessage') });
+				managerFlashFills.fillPopularRoomReport(req,res);
+        res.render("manager/popularRoom_report.ejs", { roomcatreports : req.flash('roomcatreports'), message: req.flash('reservationMessage') });
     });
 
     app.get("/revenuereport", function(req,res) {
-        res.render("manager/revenue_report.ejs", { message: req.flash('reservationMessage') });
+				managerFlashFills.fillRevenueReport(req,res);
+        res.render("manager/revenue_report.ejs", { revenuereports: req.flash('revenuereports'), message: req.flash('reservationMessage') });
     });
 
 
@@ -170,6 +175,7 @@ module.exports = function(app, passport) {
     app.post("/deletePaymentInfo", customerRoutes.postDeletePaymentInfo);
 
     app.post("/");
+
     // =====================================
     // LOGOUT ==============================
     // =====================================
