@@ -126,13 +126,19 @@ exports.postLookupreservation = function(req, res) {
 }
 
 exports.postCancelreservation = function(req,res) {
-
+	var cancel_id = req.params.cancel_id;
+	console.log({cancel_id : cancel_id});
+	req.flash('success_message', "You have successfully DELETED your reservation with id: " + cancel_id + ".");
+	res.redirect('/home');
 }
 
-
-
-
-
+exports.postGivereview = function(req,res) {
+	var location = req.body.location;
+	var rating = req.body.rating;
+	var comment = req.body.commentl
+	req.flash('success_message', "Your review of " + location + " was succesfully added. We appreciate your input!");
+	res.redirect('/home');
+}
 
 
 
