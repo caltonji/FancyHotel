@@ -4,11 +4,8 @@
 var express = require('express');
 var path = __dirname + '/views/';
 
-var customerRoutes = require('./routes/customerRoutes')
-
-var exampleRooms = [{ Room_no : 211, Room_category : 'Suite', No_people : 4, Cost_day : 250, Cost_extra_bed_day : 150, location: "Atlanta"},
-                        { Room_no : 103, Room_category : 'Standard', No_people : 2, Cost_day : 100, Cost_extra_bed_day : 70, location: "Atlanta"}];
-
+var customerRoutes = require('./routes/customerRoutes');
+var flashFills = require('./routes/customerFlashFills');
 
 // app/routes.js
 module.exports = function(app, passport) {
@@ -49,11 +46,13 @@ module.exports = function(app, passport) {
     });
 
     app.get("/availablerooms", function(req,res) {
-        res.render("customer/make_reservation.ejs", {rooms : req.flash('rooms'),  message: req.flash('reservationMessage') });
+        flashFills.fillRoomsFromSession(req, res);
+        res.render("customer/make_reservation.ejs", {rooms : req.flash('rooms'),  message: req.flash('reservationMessage'), session : req.session});
     });
 
     app.get("/reservationdetails", function(req,res) {
-        res.render("customer/reservation_details.ejs", {rooms : exampleRooms, message: req.flash('reservationMessage') });
+        flashFills.fillCardsFromUser(req, res);
+        res.render("customer/reservation_details.ejs", {cards : req.flash('cards'), rooms : req.flash('rooms'), message: req.flash('reservationMessage'), session : req.session });
     });
 
     app.get("/paymentinfo", function(req,res) {
@@ -84,6 +83,7 @@ module.exports = function(app, passport) {
         res.render("customer/give_review.ejs", { message: req.flash('reservationMessage') });
     });
 
+    //manager get routes
     app.get("/reservationreport", function(req,res) {
         res.render("manager/reservation_report.ejs", { message: req.flash('reservationMessage') });
     });
@@ -96,11 +96,15 @@ module.exports = function(app, passport) {
         res.render("manager/revenue_report.ejs", { message: req.flash('reservationMessage') });
     });
 
+
     //customer post routes
-    app.post("/findRoom", customerRoutes.findRooms);
+    app.post("/findRoom", customerRoutes.postFindRooms);
 
-    app.post("/availablerooms", customerRoutes.findRoomsByIds);
+    app.post("/availablerooms", customerRoutes.postAvailableRooms);
 
+    app.post("/reservationdetails", customerRoutes.postReservationDetails);
+
+    app.post("/")
     // =====================================
     // LOGOUT ==============================
     // =====================================
