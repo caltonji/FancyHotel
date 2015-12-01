@@ -1,3 +1,20 @@
+var sqlCreator = require('../SqlStatementCreator');
+
+var express = require('express');
+var mysql = require('mysql');
+var flash = require('connect-flash');
+var session = require('express-session');
+
+var connection = mysql.createConnection({
+  host: "academic-mysql.cc.gatech.edu",
+  user: "cs4400_Group_6",
+  password: "tEVtJmV_",
+  database : "cs4400_Group_6"
+});
+//just never let the connection
+connection.connect();
+
+
 var exampleRooms1 = [{ Room_no : 211, Room_category : 'Suite', No_people : 4, Cost_day : 250, Cost_extra_bed_day : 150, location: "Atlanta"},
                         { Room_no : 103, Room_category : 'Standard', No_people : 2, Cost_day : 100, Cost_extra_bed_day : 70, location: "Atlanta"},
                          { Room_no : 222, Room_category : 'Standard', No_people : 6, Cost_day : 150, Cost_extra_bed_day : 50, location: "Atlanta"}];
@@ -28,7 +45,7 @@ exports.fillRoomsFromReservationId = function(req,res) {
 exports.fillRoomsFromSessionDates = function(req, res) {
 	//set variables in first part the run sql query
 	if (req.session.reservation_startDate) {
-		console.log("startdate: " + req.session.reservation_startDate 
+		console.log("startdate: " + req.session.reservation_startDate
 					+ " end date " +  req.session.reservation_endDate
 					+ " location " + req.session.reservation_location);
 	} else if (req.session.update_reservation_startDate) {
@@ -37,10 +54,25 @@ exports.fillRoomsFromSessionDates = function(req, res) {
 	req.flash('rooms', exampleRooms1);
 }
 
-exports.fillCardsFromUser = function(req, res) {
+exports.fillCardsFromUser = function(req, res, callback) {
 	var Username = req.user.Username;
 	console.log({Username : Username});
-	req.flash('cards', exampleCards);
+  var data = {};
+  var query = sqlCreator.findPaymentInformation(Username);
+  console.log(query);
+  connection.query(query, function(err,rows) {
+    console.log(rows);
+    console.log('errors',err);
+    if (err) {
+      req.flash('failure_message', 'Problem connecting to DB');
+      callback();
+    } else {
+      data = rows;
+      console.log(data);
+      req.flash('cards', data);
+      callback();
+    }
+  });
 }
 
 exports.fillReservationFromSession = function(req, res) {
@@ -52,12 +84,6 @@ exports.fillReservationFromSession = function(req, res) {
 
 exports.fillReviews = function(req, res) {
 	if (req.query.location) {
-    	req.flash('reviews', exampleReviews);        
+    	req.flash('reviews', exampleReviews);
     }
 }
-
-
-
-
-
-

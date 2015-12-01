@@ -108,9 +108,8 @@ exports.fillPopularRoomReport = function(req, res, callback) {
         req.flash('roomcatreports', data);
       }
       callback();
-    })
+    });
   });
-
   //req.flash('roomcatreports', exampleRoomCategoryReport);
 }
 
