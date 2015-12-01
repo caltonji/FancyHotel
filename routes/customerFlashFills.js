@@ -15,6 +15,9 @@ var exampleReservation = [{ Reservation_ID : 1234,
 						Is_cancelled : 0,
 						Card_no	: 123412341234,
 						Username : "caltonji"}];
+var exampleReviews = [{ Comment : "You suck", Rating : "Very Bad", Location : "Atlanta"},
+						{ Comment : "You're awesome", Rating : "Good", Location : "Atlanta"}];
+
 
 exports.fillRoomsFromReservationId = function(req,res) {
 	if (req.session.reservation_cancel_id) {
@@ -44,3 +47,15 @@ exports.fillReservationFromSession = function(req, res) {
 		req.flash('reservation', exampleReservation);
 	}
 }
+
+exports.fillReviews = function(req, res) {
+	if (req.query.location) {
+    	req.flash('reviews', exampleReviews);        
+    }
+}
+
+
+
+
+
+

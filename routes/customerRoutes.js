@@ -119,6 +119,12 @@ exports.postUpdatereservation3 = function(req, res) {
 	res.redirect('/home');
 }
 
+exports.postLookupreservation = function(req, res) {
+	var cancel_id = req.body.Reservation_ID;
+	console.log({cancel_id : cancel_id});
+	res.redirect("/cancelreservation/" + cancel_id);
+}
+
 exports.postCancelreservation = function(req,res) {
 
 }
