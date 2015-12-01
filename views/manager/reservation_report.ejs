@@ -35,7 +35,6 @@
     <% } %>
 
     <br>
-
     <div class="container">
         <% if (reservationreports.length) { %>
           <table class="w3-table-all" style="width:100%">
@@ -51,14 +50,15 @@
                       <% for (var item in reservationreport) { %>
                         <% var element = reservationreport[item]; %>
                           <td><%= month%></td>
-                          <td><%= element.Location%></td>
-                          <td><%= element.total_reservations%></td>
+                          <td><%= element.location%></td>
+                          <td><%= element.location_count%></td>
                         </tr>
                     <% } %>
                   <% } %>
                 </tbody>
               </table>
               <% } %>
+              <br>
                 <button type="submit" class="btn btn-default">View another Report</button>
           </div>
 

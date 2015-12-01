@@ -116,18 +116,21 @@ module.exports = function(app, passport) {
 
     //manager get routes
     app.get("/reservationreport", function(req,res) {
-				managerFlashFills.fillReservationreport(req,res);
-        res.render("manager/reservation_report.ejs", { reservationreports : req.flash('reservationreports'),message: req.flash('reservationMessage') });
-    });
+				managerFlashFills.fillReservationreport(req,res,function(){
+					res.render("manager/reservation_report.ejs", { reservationreports : req.flash('reservationreports'),message: req.flash('message') });
+				});
+		});
 
     app.get("/poproomreport", function(req,res) {
-				managerFlashFills.fillPopularRoomReport(req,res);
-        res.render("manager/popularRoom_report.ejs", { roomcatreports : req.flash('roomcatreports'), message: req.flash('reservationMessage') });
+				managerFlashFills.fillPopularRoomReport(req,res, function() {
+				res.render("manager/popularRoom_report.ejs", { roomcatreports : req.flash('roomcatreports'), message: req.flash('reservationMessage') });
+				});
     });
 
     app.get("/revenuereport", function(req,res) {
-				managerFlashFills.fillRevenueReport(req,res);
-        res.render("manager/revenue_report.ejs", { revenuereports: req.flash('revenuereports'), message: req.flash('reservationMessage') });
+				managerFlashFills.fillRevenueReport(req,res, function() {
+			   res.render("manager/revenue_report.ejs", { revenuereports: req.flash('revenuereports'), message: req.flash('message') });
+				});
     });
 
 
@@ -145,7 +148,7 @@ module.exports = function(app, passport) {
     app.post("/updatereservation3/:reservation_id", customerRoutes.postUpdatereservation3);
 
     app.post("/lookupreservation", customerRoutes.postLookupreservation);
-    
+
     app.post("/cancelreservation/:cancel_id", customerRoutes.postCancelreservation);
 
     // app.post("/cancelreservation", function(req, res) {
