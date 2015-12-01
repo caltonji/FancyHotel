@@ -28,10 +28,18 @@
     
 
     <br>
-
+    <script>
+      var startDate = "<%= session.reservation_startDate %>";
+      var endDate = "<%= session.reservation_endDate %>";
+      
+      var date1 = new Date(startDate);
+      var date2 = new Date(endDate);
+      var timeDiff = Math.abs(date2.getTime() - date1.getTime());
+      var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+    </script>
     <% if (rooms.length > 0) { %>
       <div class="container">
-      <form method="get">
+      <form method="post">
         <table class="w3-table-all" style="width:100%">
         <tbody>
           <tr>
@@ -60,27 +68,32 @@
         <br>
         <div class="form-group">
           <label for="room_search_startdate">Start Date</label>
-          <input type="date" class="form-control" id="room_search_startdate" name="startDate" placeholder="Start Date" required>
+          <input type="date" class="form-control" id="room_search_startdate" readonly name="startDate" value="<%= session.reservation_startDate %>" required>
         </div>
         <div class="form-group">
           <label for="room_search_enddate">End Date</label>
-          <input type="date" class="form-control" id="room_search_enddate" name="endDate" placeholder="End Date" required>
+          <input type="date" class="form-control" id="room_search_enddate" readonly name="endDate" value="<%= session.reservation_endDate %>" required>
         </div>
         <h4>Total Cost: <span style="font-weight: bold;">$<span id="total_cost"></span></span></h4>
+        <input type="hidden" name ="totalCost" value="" id="hiddenTotalCostInput">
         <br>
         <div class="form-group">
           <label for="payment_info">Select Payment Information </label>
           <a href="addCard"> Add a Card</a>
           <select class="form-control" name="payment_info" id="payment_info" required placeholder="Select Card">
+          <% if (cards.length > 0) { %>
             <option value="">Select Card</option>
-            <option value="card1">Brad-Credit Card-4152</option>
-            <option value="card2">Brad-Debit Card-2419</option>
+            <% for (var j in rooms) { %>
+              <% var card = cards[j]; %>
+              <option value="<%= card.Card_no %>"><%= card.Name %></option>
+            <% } %>
+          <% } else { %>
+            <option value="">You have no cards registered with us.</option>
+          <% } %>
           </select>
         </div>
         <br>
-        <button onclick="roomConfirmation()" type="submit" class="btn btn-default">Finish Reservation</button>
-      
-      
+        <button type="submit" class="btn btn-default">Finish Reservation</button>
 
 
       </form>
@@ -89,26 +102,37 @@
 
       
     <% } else { %>
-      <h4>No rooms meet your search criteria. <a href="/findRoom">Try A different Search</a></h2>
+      <h4>Please <a href="/availablerooms">reselect your rooms.</a></h2>
     <% } %>
 
 
     <!-- display reservation ID -->
     <script>
+
     $( document ).ready(function() {   
+      console.log("diffDays: " + diffDays);
       var displayCost = function() {
         var totalCost = 0;
         $("tr.selected_room").each(function () {
-          totalCost += parseInt($(this).attr('roomcost'));
+          var roomCost = 0
+          roomCost += parseInt($(this).attr('roomcost'));
           if ($(this).find('input.checkbox').is(':checked'))
-            totalCost += parseInt($(this).attr('bedcost'));
-          console.log(totalCost);
+            roomCost += parseInt($(this).attr('bedcost'));
+
+          totalCost += roomCost * diffDays;
         }).promise().done( function() { 
           $('#total_cost').text(totalCost);
+          $('#hiddenTotalCostInput').attr('value', totalCost);
         });
       }
       displayCost();
       $("input.checkbox").change(displayCost);
+      // var diffDays = diffDays(a,b) {
+      //   var date1 = new Date("7/11/2010");
+      //   var date2 = new Date("12/12/2010");
+      //   var timeDiff = Math.abs(date2.getTime() - date1.getTime());
+      //   var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+      // }
     });
       // function roomConfirmation() {
       //     alert("Your reservation ID is 1234. Please save this ID for all further communication. ");
