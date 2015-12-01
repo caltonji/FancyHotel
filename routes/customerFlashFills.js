@@ -38,6 +38,8 @@ exports.fillRoomsFromSessionDates = function(req, res) {
 }
 
 exports.fillCardsFromUser = function(req, res) {
+	var Username = req.user.Username;
+	console.log({Username : Username});
 	req.flash('cards', exampleCards);
 }
 

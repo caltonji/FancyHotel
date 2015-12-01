@@ -79,13 +79,13 @@
         <br>
         <div class="form-group">
           <label for="payment_info">Select Payment Information </label>
-          <a href="addCard"> Add a Card</a>
+          <a href="paymentinfo"> Add a Card</a>
           <select class="form-control" name="payment_info" id="payment_info" required placeholder="Select Card">
           <% if (cards.length > 0) { %>
             <option value="">Select Card</option>
-            <% for (var j in rooms) { %>
-              <% var card = cards[j]; %>
-              <option value="<%= card.Card_no %>"><%= card.Name %></option>
+            <% for (var j in cards) { %>
+              <% var card_no = String(cards[j].Card_no); %>
+              <option value="<%= card_no %>"><%= card_no.substr(card_no.length - 5) %></option>
             <% } %>
           <% } else { %>
             <option value="">You have no cards registered with us.</option>
