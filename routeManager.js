@@ -107,7 +107,7 @@ module.exports = function(app, passport) {
 
     app.get("/viewreview", function(req,res) {
         flashFills.fillReviews(req,res);
-        res.render("customer/view_review.ejs", { reviews : req.flash('reviews'), message: req.flash('reservationMessage') });
+        res.render("customer/view_review.ejs", { location : req.query.location, reviews : req.flash('reviews'), message: req.flash('reservationMessage') });
     });
 
     app.get("/givereview", function(req,res) {
@@ -145,6 +145,15 @@ module.exports = function(app, passport) {
     app.post("/updatereservation3/:reservation_id", customerRoutes.postUpdatereservation3);
 
     app.post("/lookupreservation", customerRoutes.postLookupreservation);
+    
+    app.post("/cancelreservation/:cancel_id", customerRoutes.postCancelreservation);
+
+    // app.post("/cancelreservation", function(req, res) {
+    //     res.redirect("/cancelreservation");
+    // })
+
+    app.post("/givereview", customerRoutes.postGivereview);
+
     app.post("/");
 
     // =====================================

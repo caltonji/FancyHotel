@@ -10,6 +10,9 @@
     <!-- Bootstrap -->
     <link href="stylesheets/bootstrap.min.css" rel="stylesheet">
      <link href="stylesheets/style.css" rel="stylesheet">
+
+     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -31,7 +34,7 @@
       <form method='get'>
         <div class="form-group">
           <p>Choose a Hotel Location to View a Review</p>
-          <select class="form-control" name="location" id="location" required placeholder="Location">
+          <select class="form-control" name="location" id="location" required placeholder="Location" value="<%= location %>">
             <option value="">Hotel Location</option>
             <option value="Atlanta">Atlanta</option>
             <option value="Charlotte">Charlotte</option>
@@ -42,6 +45,10 @@
         </div>
         <button type="submit" class="btn btn-default">Check Reviews</button>
       </form>
+
+    <script>
+      $("#location").val("<%= location %>");
+    </script>
 
     <br>
     <br>
@@ -67,8 +74,7 @@
     <% } %>
 
     </div>
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
   </body>
