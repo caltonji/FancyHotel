@@ -21,8 +21,6 @@ var exampleRooms2 = [{ Room_no : 211, Room_category : 'Suite', No_people : 4, Co
 var exampleCards = [{Card_no : 12312341234, Name : "Personal"},
 					{Card_no : 1142243212, Name : "Business"}]
 
-
-
 exports.postFindRooms = function(req,res) {
 	console.log("startdate: " + req.body.startDate + " end date " + req.body.endDate + " location " + req.body.location);
 	req.session.reservation_startDate = req.body.startDate;
@@ -140,6 +138,22 @@ exports.postGivereview = function(req,res) {
 	res.redirect('/home');
 }
 
+exports.postAddPaymentInfo = function(req, res) {
+	var newPaymentInfo = req.body;
+	newPaymentInfo.Username = req.user.Username;
+	console.log(newPaymentInfo);
+	var cardName = String(newPaymentInfo.Card_no);
+	req.flash('success_message', "New Payment Info for Card " + cardName.substr(cardName.length - 5) + " added.");
+	res.redirect('/paymentinfo');
+}
+
+exports.postDeletePaymentInfo = function(req, res) {
+	var Card_no = req.body.delete_card;
+	console.log(Card_no);
+	var cardName = String(Card_no);
+	req.flash('success_message', "Payment Info for Card " + cardName.substr(cardName.length - 5) + " has been succesfully DELETED.");
+	res.redirect('/paymentinfo');
+}
 
 
 

@@ -19,6 +19,10 @@ module.exports = function(app, passport) {
         res.render("login.ejs", { message: req.flash('loginMessage') });
     });
 
+    app.get("/managerlogin", function(req,res) {
+        res.render("management_login.ejs", { message: req.flash('loginMessage') });
+    });
+
     app.get("/register", function(req,res) {
         res.render('registration.ejs', { message: req.flash('signupMessage') });
     });
@@ -29,6 +33,13 @@ module.exports = function(app, passport) {
         failureRedirect : '/login', // redirect back to the login page if there is an error
         failureFlash : true // allow flash messages
     }));
+
+    app.post("/managerlogin", passport.authenticate('local-management-login', {
+        successRedirect : '/managerhome', // redirect to the secure profile section
+        failureRedirect : '/managerlogin', // redirect back to the login page if there is an error
+        failureFlash : true // allow flash messages
+    }));
+
 
     app.post('/register', passport.authenticate('local-customer-signup', {
         successRedirect : '/home', // redirect to the secure profile section
@@ -60,7 +71,8 @@ module.exports = function(app, passport) {
     });
 
     app.get("/paymentinfo", function(req,res) {
-        res.render("customer/payment_info.ejs", { message: req.flash('reservationMessage') });
+        flashFills.fillCardsFromUser(req, res);
+        res.render("customer/payment_info.ejs", { cards : req.flash('cards'), success_message: req.flash('success_message'), failure_message : req.flash('failure_message') });
     });
 
     app.get("/updatereservation1", function(req,res) {
@@ -113,6 +125,10 @@ module.exports = function(app, passport) {
     });
 
     //manager get routes
+    app.get('/managerhome', isLoggedIn, function(req, res) {
+        res.render("manager/manager_home.ejs", {username : req.user.Username});
+    });
+
     app.get("/reservationreport", function(req,res) {
         res.render("manager/reservation_report.ejs", { message: req.flash('reservationMessage') });
     });
@@ -148,6 +164,10 @@ module.exports = function(app, passport) {
     // })
 
     app.post("/givereview", customerRoutes.postGivereview);
+
+    app.post("/addPaymentInfo", customerRoutes.postAddPaymentInfo);
+
+    app.post("/deletePaymentInfo", customerRoutes.postDeletePaymentInfo);
 
     app.post("/");
     // =====================================
