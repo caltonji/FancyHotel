@@ -46,7 +46,7 @@ exports.cancelReservation = function(reservationID, username) {
 			+ " AND username = " + mysql.escape(username) + ";";
 } //need to update this to add a cancellation date
 
-exports.updateReservation(reservationID, username, new_Start_date, new_End_date) {
+exports.updateReservation = function(reservationID, username, new_Start_date, new_End_date) {
 	return "UPDATE RESERVATION SET  Start_date =  " + mysql.escape(new_Start_date) + ", End_date =  "
 		+ mysql.escape(new_End_date) + " WHERE  Reservation_ID = " + mysql.escape(reservationID) + " AND username = "
 		+ mysql.escape(username) + ";";
