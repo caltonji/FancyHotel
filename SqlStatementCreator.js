@@ -43,3 +43,13 @@ exports.deleteReservation = function(reservationID, username) {
 exports.findReview = function(location) {
 	return "SELECT Rating, Comment FROM HOTEL_REVIEW WHERE Location = " + mysql.escape(location) + ";";
 }
+
+exports.createReviewNoComment = function(rating, location, username) {
+	return "INSERT INTO HOTEL_REVIEW ( Rating, Location, Username ) VALUES (" + mysql.escape(rating) + ","
+		+ mysql.escape(location) + "," + mysql.escape(username) + ";";
+}
+
+exports.createReviewWithComment = function(comment, rating, location, username) {
+	return "INSERT INTO HOTEL_REVIEW ( Comment, Rating, Location, Username ) VALUES (" + mysql.escape(comment)
+		+ ","+ mysql.escape(rating) + "," + mysql.escape(location) + "," + mysql.escape(username) + ";";
+}
