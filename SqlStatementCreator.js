@@ -41,10 +41,14 @@ exports.createReservation = function(startDate, endDate, totalCost, isCancelled,
 		+ "," + mysql.escape(cardNo) + "," + mysql.escape(username) + ");";
 }
 
-exports.deleteReservation = function(reservationID, username) {
-	return "DELETE FROM RESERVATION WHERE Reservation_ID = " + mysql.escape(reservationID)
-		+ "AND username = " + mysql.escape(username) + ";";
+exports.cancelReservation = function(reservationID, username) {
+	return "UPDATE RESERVATION SET Is_cancelled = " + mysql.escape(1) + " WHERE Reservation_Id = " + mysql.escape(reservationID)
+			+ " AND username = " + mysql.escape(username) + ";";
 }
+
+exports.updateReservation
+//deleting old has_room associated with reservation
+//adding new has_room to reservation
 
 exports.findReview = function(location) {
 	return "SELECT Rating, Comment FROM HOTEL_REVIEW WHERE Location = " + mysql.escape(location) + ";";
