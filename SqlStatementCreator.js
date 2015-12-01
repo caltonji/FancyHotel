@@ -44,11 +44,19 @@ exports.createReservation = function(startDate, endDate, totalCost, isCancelled,
 exports.cancelReservation = function(reservationID, username) {
 	return "UPDATE RESERVATION SET Is_cancelled = " + mysql.escape(1) + " WHERE Reservation_Id = " + mysql.escape(reservationID)
 			+ " AND username = " + mysql.escape(username) + ";";
-}
+} //need to update this to add a cancellation date
 
-exports.updateReservation
-//deleting old has_room associated with reservation
-//adding new has_room to reservation
+exports.updateReservation(reservationID, username, new_Start_date, new_End_date) {
+	return "UPDATE RESERVATION SET  Start_date =  " + mysql.escape(new_Start_date) + ", End_date =  "
+		+ mysql.escape(new_End_date) + " WHERE  Reservation_ID = " + mysql.escape(reservationID) + " AND username = "
+		+ mysql.escape(username) + ";";
+}
+//change start and end date of a reservation. Pass in reservationID, username, new dates
+
+//need to check if room is available with 1 query THEN update reservation
+
+//check for available room query
+
 
 exports.findReview = function(location) {
 	return "SELECT Rating, Comment FROM HOTEL_REVIEW WHERE Location = " + mysql.escape(location) + ";";
@@ -83,6 +91,8 @@ exports.searchRooms = function(roomArray) { //TODO: test this?
 
 	return query;
 }
+
+//does this search find available rooms?
 
 exports.createReservationReport = function(month_number) { //This will need to be run once for each month
 	return "SELECT location, COUNT( * ) AS location_count FROM RESERVATION NATURAL JOIN HAS_ROOM WHERE MONTH(Start_date) = "
