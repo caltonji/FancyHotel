@@ -18,3 +18,7 @@ th {
 	background-color: gray;
 	color: white;
 }
+
+span.bold {
+	text-weight: bold;
+}

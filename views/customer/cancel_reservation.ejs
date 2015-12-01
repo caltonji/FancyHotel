@@ -17,8 +17,12 @@
     <title>Cancel Your Reservation</title>
 
     <!-- Bootstrap -->
-    <link href="stylesheets/bootstrap.min.css" rel="stylesheet">
+    <link href="../stylesheets/bootstrap.min.css" rel="stylesheet">
+    <link href="../stylesheets/style.css" rel="stylesheet">
 
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="../js/moment.min.js"></script>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -37,6 +41,143 @@
 
     <br>
 
+
+    <% if (message.length > 0) { %>
+        <div class="alert alert-danger"><%= message %></div>
+    <% } %>
+
+    <br>
+    
+    <% if (rooms.length > 0 && session.reservation_cancel_id && reservation.length) { %>
+
+    <script>
+      // values to keep from the session/from the 
+      var oldCost = <%= reservation[0].Total_cost %>;
+
+      var startDate = "<%= reservation[0].Start_date %>";
+      var endDate = "<%= reservation[0].End_date %>";
+      var differenceDays = function(date1, date2) {
+        var mdate1 = moment(date1);
+        var mdate2 = moment(date2);
+        var days =  mdate2.diff(mdate1, 'days')
+        console.log(days);
+        return days;
+        // var timeDiff = Math.abs(date2.getTime() - date1.getTime());
+        // return Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+      }
+      var diffDays = differenceDays(startDate, endDate);
+    </script>
+      <div class="container">
+      <form method="post">
+        <h4>Reservation ID: <span style="font-weight: bold;"><%= reservation[0].Reservation_ID %></span>
+        <input type="hidden" name ="reservationId" value="<%= reservation[0].Reservation_ID %>" id="hiddenReservationId">
+        </h4>
+        <br>
+        <div class="form-group">
+          <label for="room_search_startdate">Start Date</label>
+          <input type="date" class="form-control" id="room_search_startdate" readonly name="startDate" value="<%= reservation[0].Start_date %>" required>
+        </div>
+        <div class="form-group">
+          <label for="room_search_enddate">End Date</label>
+          <input type="date" class="form-control" id="room_search_enddate" readonly name="endDate" value="<%= reservation[0].End_date %>" required>
+        </div>
+        <table class="w3-table-all" style="width:100%">
+        <tbody>
+          <tr>
+            <th>Room Number</th>
+            <th>Room Category</th>
+            <th># Persons Allowed</th>
+            <th>Cost per Day</th>
+            <th>Cost of Extra Bed per Day</th>
+            <th>Extra Bed</th>
+          </tr>
+        <% for (var i in rooms) { %>
+          <% var room = rooms[i]; %>
+          <tr class="available_room" roomcost="<%= room.Cost_day %>">
+            <td><%= room.Room_no %></td>
+            <td><%= room.Room_category %></td>
+            <td><%= room.No_people %></td>
+            <td><%= room.Cost_day %></td>
+            <td><%= room.Cost_extra_bed_day %></td>
+            <td>
+              <!-- This is not an easy problem to fix -->
+              Yes
+            </td>
+          </tr>
+        <% } %>
+        </tbody>
+        </table>
+        <br>
+        <h4>Total Cost: <span style="font-weight: bold;">$<span id="prev_cost"></span><%= reservation[0].Total_cost %></span></h4>
+        <input type="hidden" name ="TotalCost" value="<%= reservation[0].Total_cost %>" id="hiddenTotalCostInput">
+        <br>
+        <div class="form-group">
+          <label for="room_search_startdate">Date of Cancellation</label>
+          <input type="date" class="form-control" id="cancellationDate" readonly name="cancellationDate" value="" required>
+        </div>
+        <h4>Refund Amount: <span style="font-weight: bold;">$<span id="refund_amount"></span></span></h4>
+        <input type="hidden" name ="refundAmount" value="" id="hiddenRefundAmount">
+        <br>
+        <button type="submit" class="btn btn-default">Update Reservation</button>
+      </form>
+    </div>
+
+    <!-- display reservation ID -->
+    <script>
+
+    $( document ).ready(function() {   
+
+      var today = new moment().format("YYYY-MM-DD");
+      $("#cancellationDate").attr('value', today);
+
+      var totalCost = <%= reservation[0].Total_cost %>;
+      var refundAmount = totalCost;
+      if (differenceDays(today, startDate) < 3) {
+        refundAmount *= 0.8;
+      }
+      $('#refund_amount').text(refundAmount);
+      $('#hiddenRefundAmount').attr('value', refundAmount);
+      // // console.log("diffDays: " + diffDays);s
+      // var displayCost = function() {
+      //   var totalCost = 0;
+      //   $("tr.selected_room").each(function () {
+      //     var roomCost = 0
+      //     roomCost += parseInt($(this).attr('roomcost'));
+      //     if ($(this).find('input.checkbox').is(':checked'))
+      //       roomCost += parseInt($(this).attr('bedcost'));
+
+      //     totalCost += roomCost * diffDays;
+      //   }).promise().done( function() { 
+      //     $('#total_cost').text(totalCost);
+      //     $('#hiddenTotalCostInput').attr('value', totalCost);
+      //   });
+      // }
+      // displayCost();
+      // $("input.checkbox").change(displayCost);
+      // var diffDays = diffDays(a,b) {
+      //   var date1 = new Date("7/11/2010");
+      //   var date2 = new Date("12/12/2010");
+      //   var timeDiff = Math.abs(date2.getTime() - date1.getTime());
+      //   var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+      // }
+    });
+
+    </script>
+
+    <% } else { %>
+      <h4>Can't find reservation. <a href="/lookupreservation">Lookup Another</a></h2>
+    <% } %>
+
+
+
+    
+
+
+
+<!-- 
+
+
+    
     <div class="container">
       <form class="form-horizontal" role="form">
         <div class="form-group">
@@ -86,11 +227,10 @@
           <label class="control-label col-sm-2" for="curStartDate"> Amount to be Refunded:</label>
         </div>
         <button type="submit" class="btn btn-default">Cancel Reservation</button>
-    </div>
+    </div> -->
 
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="js/bootstrap.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
   </body>
 </html>

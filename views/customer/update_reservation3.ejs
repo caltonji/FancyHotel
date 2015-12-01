@@ -17,8 +17,11 @@
     <title>Update Your Reservation</title>
 
     <!-- Bootstrap -->
-    <link href="stylesheets/bootstrap.min.css" rel="stylesheet">
-
+    <link href="../stylesheets/bootstrap.min.css" rel="stylesheet">
+    <link href="../stylesheets/style.css" rel="stylesheet">
+    
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -28,7 +31,7 @@
   </head>
   <body>
     <h1>Update Your Reservation</h1>
-    <P> Rooms are available! Please confirm details below before submitting. <p>
+    
 
     <!-- show any messages that come back with authentication -->
     <% if (message.length > 0) { %>
@@ -36,54 +39,98 @@
     <% } %>
 
     <br>
+    
+    <% if (rooms.length > 0 && session.reservation_update_id && reservation.length) { %>
 
-    <div class="container">
-      <table class="w3-table-all" style="width:100%">
-        <tbody><tr>
-        	<th>Room Number</th>
-        	<th>Room Category</th>
-        	<th># Persons Allowed</th>
-        	<th>Cost per Day</th>
-          <th>Cost of Extra Bed per Day</th>
-          <th>Select Room</th>
-        </tr>
-        <tr>
-        	<td>211</td>
-        	<td>Suite</td>
-        	<td>4</td>
-        	<td>250</td>
-          <td>150</td>
-          <td><form action="">
-             <input type="checkbox" name="select_room" value="selected"><br>
-           </form></td>
-        </tr>
-        <tr>
-        	<td>103</td>
-        	<td>Standard</td>
-        	<td>2</td>
-        	<td>100</td>
-          <td>70</td>
-          <td><form action="">
-             <input type="checkbox" name="select_room" value="selected"><br>
-           </form></td>
-        </tr>
-        <tr>
-        	<td>309</td>
-        	<td>Family</td>
-        	<td>4</td>
-        	<td>170</td>
-          <td>50</td>
-          <td><form action="">
-             <input type="checkbox" name="select_room" value="selected"><br>
-           </form></td>
-        </tr>
-        </tbody></table>
+    <script>
+      // values to keep from the session/from the 
+      var oldCost = <%= reservation[0].Total_cost %>;
+
+      var startDate = "<%= session.update_reservation_startDate %>";
+      var endDate = "<%= session.update_reservation_endDate %>";
+      
+      var date1 = new Date(startDate);
+      var date2 = new Date(endDate);
+      var timeDiff = Math.abs(date2.getTime() - date1.getTime());
+      var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+    </script>
+
+      <p> Rooms are available! Please confirm details below before submitting. <p>
+      <div class="container">
+      <form method="post">
+        <div class="form-group">
+          <label for="room_search_startdate">Start Date</label>
+          <input type="date" class="form-control" id="room_search_startdate" readonly name="startDate" value="<%= session.update_reservation_startDate %>" required>
+        </div>
+        <div class="form-group">
+          <label for="room_search_enddate">End Date</label>
+          <input type="date" class="form-control" id="room_search_enddate" readonly name="endDate" value="<%= session.update_reservation_endDate %>" required>
+        </div>
+        <table class="w3-table-all" style="width:100%">
+        <tbody>
+          <tr>
+            <th>Room Number</th>
+            <th>Room Category</th>
+            <th># Persons Allowed</th>
+            <th>Cost per Day</th>
+            <th>Cost of Extra Bed per Day</th>
+            <th>Select Room</th>
+          </tr>
+        <% for (var i in rooms) { %>
+          <% var room = rooms[i]; %>
+          <tr class="available_room" roomcost="<%= room.Cost_day %>">
+            <td><%= room.Room_no %></td>
+            <td><%= room.Room_category %></td>
+            <td><%= room.No_people %></td>
+            <td><%= room.Cost_day %></td>
+            <td><%= room.Cost_extra_bed_day %></td>
+            <td>
+              <input class="checkbox" type="checkbox" name="select_room" value="<%= room.Room_no%> <%= room.location %>"><br>
+            </td>
+          </tr>
+        <% } %>
+        </tbody>
+        </table>
+        <br>
+        <h4>Previous Cost: <span style="font-weight: bold;">$<span id="prev_cost"></span><%= reservation[0].Total_cost %></span></h4>
+        <input type="hidden" name ="PrevCost" value="" id="hiddenPrevCostInput">
+        <br>
+        <h4>New Cost: <span style="font-weight: bold;">$<span id="total_cost"></span></span></h4>
+        <input type="hidden" name ="totalCost" value="" id="hiddenTotalCostInput">
+
         <br>
         <button type="submit" class="btn btn-default">Update Reservation</button>
+      </form>
     </div>
+    <% } else { %>
+      <h4>No rooms meet your search criteria. <a href="/updatereservation2">Try A different Search</a></h2>
+    <% } %>
+    
 
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script>
+
+    $( document ).ready(function() {   
+      
+      var displayCost = function() {
+        var totalCost = 0;
+        $("tr.available_room").each(function () {
+          var roomCost = 0
+          console.log("inside");
+          // roomCost += parseInt($(this).attr('roomcost'));
+          if ($(this).find('input.checkbox').is(':checked'))
+            roomCost += parseInt($(this).attr('roomcost'));
+
+          totalCost += roomCost * diffDays;
+        }).promise().done( function() { 
+          $('#total_cost').text(totalCost);
+          $('#hiddenTotalCostInput').attr('value', totalCost);
+        });
+      }
+      displayCost();
+      $("input.checkbox").change(displayCost);
+    });
+    </script>
+    
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
   </body>

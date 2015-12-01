@@ -18,12 +18,18 @@
     <![endif]-->
   </head>
   <body>
+
+    <% if (success_message.length > 0) { %>
+        <div class="alert alert-success"><%= success_message %></div>
+    <% } %>
+
+
     <div="container">
       <h1>Welcome, <%= username %>.</h1>
       <br><br>
       <a href="findRoom">Make a new Reservation</a>
       <br>
-      <a href="updateReservation">Update Your Reservation</a>
+      <a href="updatereservation1">Update Your Reservation</a>
       <br>
       <a href="cancelReservation">Cancel Reservation</a>
       <br>

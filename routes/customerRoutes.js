@@ -22,6 +22,7 @@ var exampleCards = [{Card_no : 12312341234, Name : "Personal"},
 					{Card_no : 1142243212, Name : "Business"}]
 
 
+
 exports.postFindRooms = function(req,res) {
 	console.log("startdate: " + req.body.startDate + " end date " + req.body.endDate + " location " + req.body.location);
 	req.session.reservation_startDate = req.body.startDate;
@@ -34,25 +35,32 @@ exports.postFindRooms = function(req,res) {
 exports.postAvailableRooms = function(req, res) {
 	//FIXME do actual query
 	console.log("entered");
-	var items;
-	if (!req.body.select_room) {
-		//nothing selected
-	} else if (!Array.isArray(req.body.select_room)) {
-		//is one item
-		items = [req.body.select_room];
-	} else {
-		// is multiple item
-		items = req.body.select_room;
-	}
-	var itemsForQuery = [];
-	for (var i in items) {
-		itemsForQuery.push(getRoom(items[i]));
-	}
+	var itemsForQuery = getRooms(req.body.select_room);
 
 	//FIXME: need to use actual query for this
 	console.log(itemsForQuery);
 	req.flash('rooms', exampleRooms2);
 	res.redirect('/reservationdetails');
+}
+
+
+
+var getRooms = function(select_room) {
+	var items;
+	if (!select_room) {
+		//nothing selected
+	} else if (!Array.isArray(select_room)) {
+		//is one item
+		items = [select_room];
+	} else {
+		// is multiple item
+		items = select_room;
+	}
+	var itemsForQuery = [];
+	for (var i in items) {
+		itemsForQuery.push(getRoom(items[i]));
+	}
+	return itemsForQuery;
 }
 
 var getRoom = function(RoomnoLocation) {
@@ -72,9 +80,54 @@ exports.postReservationDetails = function(req, res) {
 	console.log("startdate: " + startDate + " end date " + endDate + " location " + location);
 	var totalCost = parseInt(req.body.totalCost);
 	var isCancelled = 0;
-	var Card_no = req.body.payment_info;	
+	var Card_no = req.body.payment_info;
+	console.log("totalCost: " + totalCost + " isCancelled: " + isCancelled + " Card_no: " + Card_no);	
+	req.session.last_reservation_id = 12343;
+	res.render('customer/reservationid.ejs', {session : req.session});
+}
+
+exports.postUpdatereservation1 = function(req, res) {
+	// req.session.reservation_update_id = req.body.Reservation_ID;
+	// console.log("Reservation_ID: ", req.session.reservation_update_id);
+	res.redirect('/updatereservation2/' + req.body.Reservation_ID);
+}
+
+exports.postUpdatereservation2 = function(req, res) {
+	req.session.update_reservation_startDate = req.body.newStartDate;
+	req.session.update_reservation_endDate = req.body.newEndDate;
+	req.session.update_reservation_location = req.body.location;
+	res.redirect('/updatereservation3/' + req.params.reservation_id);
+}
+
+exports.postUpdatereservation3 = function(req, res) {
+	//default extra bed to no and let that update later also
+	var reservationId = req.session.reservation_update_id;
+	var startDate = req.session.update_reservation_startDate;
+	var endDate = req.session.update_reservation_endDate;
+	var rooms = getRooms(req.body.select_room);
+	var totalCost = parseInt(req.body.totalCost);
+
+	//just printing quickly
+	console.log({ reservationId : reservationId,
+				startDate : startDate,
+				endDate : endDate,
+				rooms : rooms,
+				totalCost : totalCost})
+	//FIXME: this function is fairly complicated, it needs to
+	//delete old HAS_ROOMS and make new ones and update values
+	req.flash('success_message', "You have successfully updated your reservation with id: " + reservationId + ".");
 	res.redirect('/home');
 }
+
+exports.postCancelreservation = function(req,res) {
+
+}
+
+
+
+
+
+
 
 
 

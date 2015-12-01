@@ -8,8 +8,9 @@
     <title>Update Your Reservation</title>
 
     <!-- Bootstrap -->
-    <link href="stylesheets/bootstrap.min.css" rel="stylesheet">
-
+    <link href="../stylesheets/bootstrap.min.css" rel="stylesheet">
+    <link href="../stylesheets/style.css" rel="stylesheet">
+    
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -19,6 +20,7 @@
   </head>
   <body>
     <h1>Update Your Reservation</h1>
+    <h4>Reservation Id <span class='bold'><%= reservation.Reservation_ID %></span></h4>
     <p>Please enter your updated reservation dates to search for available rooms.<p>
 
     <!-- show any messages that come back with authentication -->
@@ -27,33 +29,55 @@
     <% } %>
 
     <br>
-    <div class="container">
-      <form class="form-horizontal" role="form">
-        <div class="form-group">
-          <label class="control-label col-sm-2" for="curStartDate">Current Start Date: render date here</label>
-        </div>
-        <div class="form-group">
-          <label class="control-label col-sm-2" for="curEndDate">Current End Date: render date here</label>
-        </div>
-        <div class="form-group">
-          <label class="control-label col-sm-2" for="newStartDate">New Start Date</label>
+    <% if (reservation.length) { %>
+      <div class="container">
+        <form class="form-horizontal" role="form" method='post'>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="curStartDate">Current Start Date</label>
             <div class="col-sm-10">
-              <input type="date" class="form-control" id="newStartDate" name="newStartDate" placeholder="New Start Date" required>
+                <input type="date" class="form-control" id="oldStartDate" name="oldStartDate" value="<%= reservation[0].Start_date %>" readonly>
             </div>
-        </div>  <div class="form-group">
-            <label class="control-label col-sm-2" for="newEndDate">New End Date</label>
-              <div class="col-sm-10">
-                <input type="date" class="form-control" id="newEndDate" name="newEndDate" placeholder="New End Date" required>
-              </div>
           </div>
-      <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-          <button type="submit" class="btn btn-default">Search Availability</button>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="curEndDate">Current End Date</label>
+            <div class="col-sm-10">
+                <input type="date" class="form-control" id="oldEndDate" name="oldEndDate" value="<%= reservation[0].End_date %>" readonly>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="newStartDate">New Start Date</label>
+              <div class="col-sm-10">
+                <input type="date" class="form-control" id="newStartDate" name="newStartDate" placeholder="New Start Date" required>
+              </div>
+          </div>  <div class="form-group">
+              <label class="control-label col-sm-2" for="newEndDate">New End Date</label>
+                <div class="col-sm-10">
+                  <input type="date" class="form-control" id="newEndDate" name="newEndDate" placeholder="New End Date" required>
+                </div>
+            </div>
+          <div class="form-group">
+          <label for="location">Location</label>
+          <p>Fancy Hotels are located in Atlanta, Charlottle, Miami, Orlando, and Savannah</p>
+          <select class="form-control" name="location" id="location" required placeholder="Choose Location">
+            <option value="">Choose Location</option>
+            <option value="Atlanta">Atlanta</option>
+            <option value="Charlotte">Charlotte</option>
+            <option value="Miami">Miami</option>
+            <option value="Orlando">Orlando</option>
+            <option value="Savannah">Savannah</option>
+          </select>
         </div>
-      </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">Search Availability</button>
+          </div>
+        </div>
 
-    </form>
-  </div>
+        </form>
+      </div>
+    <% } else { %>
+      <h4>Reservation not available <a href="/updatereservation1">Check Another Reservation</a></h4>
+    <% } %>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
