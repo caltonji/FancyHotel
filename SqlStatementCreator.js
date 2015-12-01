@@ -35,6 +35,8 @@ exports.findReservation = function(reservationID, username) {
 		+ "AND username = " + mysql.escape(username) + ";";
 }
 
+//exports.createReservation = function(room) TODO: finish this one
+
 exports.deleteReservation = function(reservationID, username) {
 	return "DELETE FROM RESERVATION WHERE Reservation_ID = " + mysql.escape(reservationID)
 		+ "AND username = " + mysql.escape(username) + ";";
@@ -52,4 +54,24 @@ exports.createReviewNoComment = function(rating, location, username) {
 exports.createReviewWithComment = function(comment, rating, location, username) {
 	return "INSERT INTO HOTEL_REVIEW ( Comment, Rating, Location, Username ) VALUES (" + mysql.escape(comment)
 		+ ","+ mysql.escape(rating) + "," + mysql.escape(location) + "," + mysql.escape(username) + ";";
+}
+
+exports.searchRooms = function(roomArray) { //TODO: test this?
+
+	var query = "SELECT * FROM ROOM WHERE (";
+
+	for (var i = 0; i < roomArray.length; i++) {
+
+		var room = roomArray[i];
+
+		query = query + " location = " + mysql.escape(room.location) + " AND Room_no = " + mysql.escape(room.Room_no) + ")";
+
+		if (i != roomArray.length - 1) {
+			query = query + " OR (";
+		} else {
+			query = query + ";";
+		}
+	}
+
+	return query;
 }
