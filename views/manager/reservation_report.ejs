@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <style>
+        table, td, th {
+        border: 1px solid gray;
+        }
+        th {
+        background-color: gray;
+        color: white;
+        }
+    </style>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Make a Reservation</title>
+
+    <!-- Bootstrap -->
+    <link href="stylesheets/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <h1>Reservation Report</h1>
+
+    <!-- show any messages that come back with authentication -->
+    <% if (message.length > 0) { %>
+        <div class="alert alert-danger"><%= message %></div>
+    <% } %>
+
+    <br>
+
+    <div class="container">
+      <table class="w3-table-all" style="width:100%">
+        <tbody><tr>
+        	<th>Month</th>
+        	<th>Location</th>
+        	<th>Total # of Reservations</th>
+        </tr>
+        <tr>
+        	<td>August</td>
+        	<td>Atlanta<br>Orlando<br></td>
+        	<td>4</td>
+        </tr>
+        <tr>
+        	<td>103</td>
+        	<td>Standard</td>
+        	<td>2</td>
+        </tr>
+        <tr>
+        	<td>309</td>
+        	<td>Family</td>
+        	<td>4</td>
+        </tr>
+        <tr>
+        	<td>101</td>
+        	<td>Standard</td>
+        	<td>2</td>
+        </tr>
+        </tbody></table>
+        <br>
+        <button type="submit" class="btn btn-default">View another Report</button>
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+  </body>
+</html>

@@ -79,6 +79,10 @@ module.exports = function(app, passport) {
 		app.get("/givereview", function(req,res) {
 					res.render("customer/give_review.ejs", { message: req.flash('reservationMessage') });
 			});
+
+			app.get("/reservationreport", function(req,res) {
+						res.render("manager/reservation_report.ejs", { message: req.flash('reservationMessage') });
+				});
     //customer post routes
     app.post("/findRoom", isLoggedIn, customerRoutes.findRoom);
 
