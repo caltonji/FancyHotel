@@ -79,3 +79,11 @@ exports.searchRooms = function(roomArray) { //TODO: test this?
 
 	return query;
 }
+
+exports.createReservationReport = function(month_number) {
+	return "SELECT *, COUNT( * ) AS location_count FROM RESERVATION NATURAL JOIN HAS_ROOM WHERE MONTH(Start_date) = "
+		+ mysql.escape(month_number) + "AND Is_cancelled = " + mysql.escape(0) + " GROUP BY location";
+}
+
+
+
