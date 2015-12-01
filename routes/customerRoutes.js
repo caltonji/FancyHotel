@@ -3,16 +3,16 @@ var mysql = require('mysql');
 var flash = require('connect-flash');
 var session = require('express-session');
 
-var sqlCreator = require('../SqlStatementCreator');
+// var sqlCreator = require('../SqlStatementCreator');
 
-var connection = mysql.createConnection({
-  host: "academic-mysql.cc.gatech.edu",
-  user: "cs4400_Group_6",
-  password: "tEVtJmV_",
-  database : "cs4400_Group_6"
-});
-//just never let the connection
-connection.connect()
+// var connection = mysql.createConnection({
+//   host: "academic-mysql.cc.gatech.edu",
+//   user: "cs4400_Group_6",
+//   password: "tEVtJmV_",
+//   database : "cs4400_Group_6"
+// });
+// //just never let the connection
+// connection.connect()
 
 
 var exampleRooms1 = [{ Room_no : 211, Room_category : 'Suite', No_people : 4, Cost_day : 250, Cost_extra_bed_day : 150, location: "Atlanta"},
