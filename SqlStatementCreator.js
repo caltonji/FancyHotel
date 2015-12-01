@@ -92,11 +92,13 @@ exports.searchRooms = function(roomArray) { //TODO: test this?
 	return query;
 }
 
-//does this search find available rooms?
+exports.searchAvailableRooms = function(start_date, end_date, location) {
+
+}
 
 exports.createReservationReport = function(month_number) { //This will need to be run once for each month
 	return "SELECT location, COUNT( * ) AS location_count FROM RESERVATION NATURAL JOIN HAS_ROOM WHERE MONTH(Start_date) = "
-		+ mysql.escape(month_number) + "AND Is_cancelled = " + mysql.escape(0) + " GROUP BY location";
+		+ mysql.escape(month_number) + " AND Is_cancelled = " + mysql.escape(0) + " GROUP BY location";
 } //Returns tuples in the form (location, location_count)
 
 exports.createPopularRoomReport = function(month_number) { //This will need to be run once for each month
