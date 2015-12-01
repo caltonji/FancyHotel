@@ -80,9 +80,17 @@ module.exports = function(app, passport) {
 					res.render("customer/give_review.ejs", { message: req.flash('reservationMessage') });
 			});
 
-			app.get("/reservationreport", function(req,res) {
-						res.render("manager/reservation_report.ejs", { message: req.flash('reservationMessage') });
-				});
+		app.get("/reservationreport", function(req,res) {
+					res.render("manager/reservation_report.ejs", { message: req.flash('reservationMessage') });
+			});
+
+		app.get("/poproomreport", function(req,res) {
+					res.render("manager/popularRoom_report.ejs", { message: req.flash('reservationMessage') });
+			});
+
+		app.get("/revenuereport", function(req,res) {
+					res.render("manager/revenue_report.ejs", { message: req.flash('reservationMessage') });
+			});
     //customer post routes
     app.post("/findRoom", isLoggedIn, customerRoutes.findRoom);
 
