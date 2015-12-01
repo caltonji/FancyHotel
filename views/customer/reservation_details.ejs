@@ -18,7 +18,8 @@
 
     <!-- Bootstrap -->
     <link href="stylesheets/bootstrap.min.css" rel="stylesheet">
-
+    <link href="stylesheets/style.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -33,40 +34,38 @@
     <% if (message.length > 0) { %>
         <div class="alert alert-danger"><%= message %></div>
     <% } %>
+    
 
     <br>
 
-    <div class="container">
-      <table class="w3-table-all" style="width:100%">
-        <tbody><tr>
-        	<th>Room Number</th>
-        	<th>Room Category</th>
-        	<th># Persons Allowed</th>
-        	<th>Cost per Day</th>
-          <th>Cost of Extra Bed per Day</th>
-          <th>Select Room</th>
-        </tr>
-        <tr>
-        	<td>211</td>
-        	<td>Suite</td>
-        	<td>4</td>
-        	<td>250</td>
-          <td>150</td>
-          <td><form action="">
-             <input type="checkbox" name="select_room" value="selected"><br>
-           </form></td>
-        </tr>
-        <tr>
-        	<td>103</td>
-        	<td>Standard</td>
-        	<td>2</td>
-        	<td>100</td>
-          <td>70</td>
-          <td><form action="">
-             <input type="checkbox" name="select_room" value="selected"><br>
-           </form></td>
-        </tr>
-        </tbody></table>
+    <% if (rooms.length > 0) { %>
+      <div class="container">
+      <form method="get">
+        <table class="w3-table-all" style="width:100%">
+        <tbody>
+          <tr>
+            <th>Room Number</th>
+            <th>Room Category</th>
+            <th># Persons Allowed</th>
+            <th>Cost per Day</th>
+            <th>Cost of Extra Bed per Day</th>
+            <th>Extra Bed</th>
+          </tr>
+        <% for (var i in rooms) { %>
+          <% var room = rooms[i]; %>
+          <tr class="selected_room" roomcost="<%= room.Cost_day %>" bedcost="<%= room.Cost_extra_bed_day %>">
+            <td><%= room.Room_no %></td>
+            <td><%= room.Room_category %></td>
+            <td><%= room.No_people %></td>
+            <td><%= room.Cost_day %></td>
+            <td ><%= room.Cost_extra_bed_day %></td>
+            <td>
+              <input class="checkbox" type="checkbox" name="extra_bed" value="<%= room.Room_no%> <%= room.location %>" ><br>
+            </td>
+          </tr>
+        <% } %>
+        </tbody>
+        </table>
         <br>
         <div class="form-group">
           <label for="room_search_startdate">Start Date</label>
@@ -76,6 +75,8 @@
           <label for="room_search_enddate">End Date</label>
           <input type="date" class="form-control" id="room_search_enddate" name="endDate" placeholder="End Date" required>
         </div>
+        <h4>Total Cost: <span style="font-weight: bold;">$<span id="total_cost"></span></span></h4>
+        <br>
         <div class="form-group">
           <label for="payment_info">Select Payment Information </label>
           <a href="addCard"> Add a Card</a>
@@ -87,17 +88,44 @@
         </div>
         <br>
         <button onclick="roomConfirmation()" type="submit" class="btn btn-default">Finish Reservation</button>
+      
+      
+
+
+      </form>
+
     </div>
+
+      
+    <% } else { %>
+      <h4>No rooms meet your search criteria. <a href="/findRoom">Try A different Search</a></h2>
+    <% } %>
+
 
     <!-- display reservation ID -->
     <script>
-      function roomConfirmation() {
-          alert("Your reservation ID is 1234. Please save this ID for all further communication. ");
+    $( document ).ready(function() {   
+      var displayCost = function() {
+        var totalCost = 0;
+        $("tr.selected_room").each(function () {
+          totalCost += parseInt($(this).attr('roomcost'));
+          if ($(this).find('input.checkbox').is(':checked'))
+            totalCost += parseInt($(this).attr('bedcost'));
+          console.log(totalCost);
+        }).promise().done( function() { 
+          $('#total_cost').text(totalCost);
+        });
       }
+      displayCost();
+      $("input.checkbox").change(displayCost);
+    });
+      // function roomConfirmation() {
+      //     alert("Your reservation ID is 1234. Please save this ID for all further communication. ");
+      // }
     </script>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
   </body>
