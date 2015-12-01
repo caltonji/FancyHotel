@@ -14,7 +14,6 @@ var example = [{ Room_no : 211, Room_category : 'Suite', No_people : 4, Cost_day
                         { Room_no : 103, Room_category : 'Standard', No_people : 2, Cost_day : 100, Cost_extra_bed_day : 70, location: "Atlanta"}];
 
 
-
 exports.findRooms = function(req,res) {
 	//FIXME: make actual query and return results
 	console.log("startdate: " + req.body.startDate + " end date " + req.body.endDate + " location " + req.body.location);
