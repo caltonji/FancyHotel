@@ -39,3 +39,7 @@ exports.deleteReservation = function(reservationID, username) {
 	return "DELETE FROM RESERVATION WHERE Reservation_ID = " + mysql.escape(reservationID)
 		+ "AND username = " + mysql.escape(username) + ";";
 }
+
+exports.findReview = function(location) {
+	return "SELECT Rating, Comment FROM HOTEL_REVIEW WHERE Location = " + mysql.escape(location) + ";";
+}
