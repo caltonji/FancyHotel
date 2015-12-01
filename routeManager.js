@@ -95,9 +95,11 @@ module.exports = function(app, passport) {
     app.get("/revenuereport", function(req,res) {
         res.render("manager/revenue_report.ejs", { message: req.flash('reservationMessage') });
     });
-    
+
     //customer post routes
     app.post("/findRoom", customerRoutes.findRooms);
+
+    app.post("/availablerooms", customerRoutes.findRoomsByIds);
 
     // =====================================
     // LOGOUT ==============================
