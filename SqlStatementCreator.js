@@ -90,3 +90,9 @@ exports.createPopularRoomReport = function(month_number) { //This will need to b
 		+ " FROM ROOM NATURAL JOIN RESERVATION NATURAL JOIN HAS_ROOM WHERE MONTH( Start_date ) =  " + mysql.escape(month_number)
 		+ "AND Is_cancelled = " + mysql.escape(0) + " GROUP BY location, Room_category) AS sub GROUP BY location;";
 } //Returns tuples in the form (location, Room_category, count)
+
+exports.createRevenueReport = function(month_number) { //This will need to be run once for each month
+	return "SELECT location, SUM(Total_cost) FROM ROOM NATURAL JOIN HAS_ROOM NATURAL JOIN RESERVATION WHERE MONTH(Start_date) = "
+		+ mysql.escape(month_number) + "AND Is_cancelled = " + mysql.escape(0) + " GROUP BY location";
+} //Returns tuples in the form (location, SUM(Total_cost))
+
