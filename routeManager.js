@@ -88,6 +88,10 @@ module.exports = function(app, passport) {
         res.redirect("/updatereservation1");
     });
 
+    app.get("/lookupreservation", function(req, res) {
+        res.render("customer/lookup_reservation");
+    })
+
     app.get("/cancelreservation/:cancel_id", function(req,res) {
         req.session.reservation_cancel_id = req.params.cancel_id;
         flashFills.fillRoomsFromReservationId(req, res);
@@ -100,7 +104,8 @@ module.exports = function(app, passport) {
     });
 
     app.get("/viewreview", function(req,res) {
-        res.render("customer/view_review.ejs", { message: req.flash('reservationMessage') });
+        flashFills.fillReviews(req,res);
+        res.render("customer/view_review.ejs", { reviews : req.flash('reviews'), message: req.flash('reservationMessage') });
     });
 
     app.get("/givereview", function(req,res) {
@@ -134,6 +139,7 @@ module.exports = function(app, passport) {
 
     app.post("/updatereservation3/:reservation_id", customerRoutes.postUpdatereservation3);
 
+    app.post("/lookupreservation", customerRoutes.postLookupreservation);
     app.post("/");
     // =====================================
     // LOGOUT ==============================
