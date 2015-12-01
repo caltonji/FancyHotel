@@ -35,7 +35,11 @@ exports.findReservation = function(reservationID, username) {
 		+ "AND username = " + mysql.escape(username) + ";";
 }
 
-//exports.createReservation = function(room) TODO: finish this one
+exports.createReservation = function(startDate, endDate, totalCost, isCancelled, cardNo, username) {
+	return "INSERT INTO RESERVATION ( Start_date, End_date, Total_cost, Is_cancelled, Card_no, Username ) VALUES ("
+		+ mysql.escape(startDate) + "," + mysql.escape(endDate) + "," + mysql.escape(totalCost) + "," + mysql.escape(isCancelled)
+		+ "," + mysql.escape(cardNo) + "," + mysql.escape(username) + ");";
+}
 
 exports.deleteReservation = function(reservationID, username) {
 	return "DELETE FROM RESERVATION WHERE Reservation_ID = " + mysql.escape(reservationID)
