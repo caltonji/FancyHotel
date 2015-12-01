@@ -78,13 +78,14 @@ module.exports = function(app, passport) {
     });
 
     app.get("/updatereservation1", isLoggedIn, function(req,res) {
-        res.render("customer/update_reservation1.ejs", { message: req.flash('reservationMessage') });
+        res.render("customer/update_reservation1.ejs", { message: req.flash('reservationMessage') } );
     });
 
     app.get("/updatereservation2/:reservation_id", isLoggedIn, function(req,res) {
         req.session.reservation_update_id = req.params.reservation_id;
-        flashFills.fillReservationFromSession(req, res);
-        res.render("customer/update_reservation2.ejs", { reservation : req.flash('reservation'), message: req.flash('reservationMessage') });
+        flashFills.fillReservationFromUpdate(req, res, function() {
+            res.render("customer/update_reservation2.ejs", { reservation : req.flash('reservation'), message: req.flash('reservationMessage') });
+        });
     });
 
     app.get("/updatereservation2", isLoggedIn, function(req,res) {
@@ -94,8 +95,9 @@ module.exports = function(app, passport) {
     app.get("/updatereservation3/:reservation_id", isLoggedIn, function(req,res) {
         req.session.reservation_update_id = req.params.reservation_id;
         flashFills.fillRoomsFromSessionDates(req, res);
-        flashFills.fillReservationFromSession(req, res);
-        res.render("customer/update_reservation3.ejs", { rooms : req.flash('rooms'), reservation : req.flash('reservation'), message: req.flash('reservationMessage'), session : req.session });
+        flashFills.fillReservationFromUpdate(req, res, function() {
+            res.render("customer/update_reservation3.ejs", { rooms : req.flash('rooms'), reservation : req.flash('reservation'), message: req.flash('reservationMessage'), session : req.session });
+        });
     });
 
     app.get("/updatereservation3", isLoggedIn, function(req,res) {
@@ -109,8 +111,9 @@ module.exports = function(app, passport) {
     app.get("/cancelreservation/:cancel_id", isLoggedIn, function(req,res) {
         req.session.reservation_cancel_id = req.params.cancel_id;
         flashFills.fillRoomsFromReservationId(req, res);
-        flashFills.fillReservationFromSession(req, res);
-        res.render("customer/cancel_reservation.ejs", { reservation : req.flash('reservation'), rooms : req.flash('rooms'), message: req.flash('reservationMessage'), session : req.session });
+        flashFills.fillReservationFromCancel(req, res, function() {
+            res.render("customer/cancel_reservation.ejs", { reservation : req.flash('reservation'), rooms : req.flash('rooms'), message: req.flash('reservationMessage'), session : req.session });
+        });
     });
 
     app.get("/cancelreservation", isLoggedIn, function(req,res) {
@@ -123,45 +126,33 @@ module.exports = function(app, passport) {
     });
 
     app.get("/givereview", isLoggedIn, function(req,res) {
-        res.render("customer/give_review.ejs", { message: req.flash('reservationMessage') });
+        res.render("customer/give_review.ejs", { failure_message: req.flash('failure_message') });
     });
 
     //manager get routes
-    app.get("/reservationreport", function(req,res) {
-				managerFlashFills.fillReservationreport(req,res,function(){
-					res.render("manager/reservation_report.ejs", { reservationreports : req.flash('reservationreports'),message: req.flash('message') });
-				});
-		});
-
-    app.get("/poproomreport", function(req,res) {
-				managerFlashFills.fillPopularRoomReport(req,res, function() {
-				res.render("manager/popularRoom_report.ejs", { roomcatreports : req.flash('roomcatreports'), message: req.flash('reservationMessage') });
-				});
-    });
-
-    app.get("/revenuereport", function(req,res) {
-				managerFlashFills.fillRevenueReport(req,res, function() {
-			   res.render("manager/revenue_report.ejs", { revenuereports: req.flash('revenuereports'), message: req.flash('message') });
-				});
-
     app.get('/managerhome', isLoggedIn, function(req, res) {
         res.render("manager/manager_home.ejs", {username : req.user.Username});
     });
 
     app.get("/reservationreport", isLoggedIn, function(req,res) {
-				managerFlashFills.fillReservationreport(req,res);
-        res.render("manager/reservation_report.ejs", { reservationreports : req.flash('reservationreports'),message: req.flash('reservationMessage') });
-    });
+		managerFlashFills.fillReservationreport(req,res,function(){
+			res.render("manager/reservation_report.ejs", { reservationreports : req.flash('reservationreports'),message: req.flash('message') });
+		});
+	});
 
     app.get("/poproomreport", isLoggedIn, function(req,res) {
-				managerFlashFills.fillPopularRoomReport(req,res);
-        res.render("manager/popularRoom_report.ejs", { roomcatreports : req.flash('roomcatreports'), message: req.flash('reservationMessage') });
+		managerFlashFills.fillPopularRoomReport(req,res, function() {
+		  res.render("manager/popularRoom_report.ejs", { roomcatreports : req.flash('roomcatreports'), message: req.flash('reservationMessage') });
+		});
     });
 
     app.get("/revenuereport", isLoggedIn, function(req,res) {
-				managerFlashFills.fillRevenueReport(req,res);
-        res.render("manager/revenue_report.ejs", { revenuereports: req.flash('revenuereports'), message: req.flash('reservationMessage') });
+        managerFlashFills.fillRevenueReport(req,res, function() {
+            res.render("manager/revenue_report.ejs", { revenuereports: req.flash('revenuereports'), message: req.flash('message') });
+        });
     });
+
+
 
 
     //customer post routes
@@ -177,15 +168,9 @@ module.exports = function(app, passport) {
 
     app.post("/updatereservation3/:reservation_id", isLoggedIn, customerRoutes.postUpdatereservation3);
 
-<<<<<<< HEAD
-    app.post("/lookupreservation", customerRoutes.postLookupreservation);
-
-    app.post("/cancelreservation/:cancel_id", customerRoutes.postCancelreservation);
-=======
     app.post("/lookupreservation", isLoggedIn, customerRoutes.postLookupreservation);
 
     app.post("/cancelreservation/:cancel_id", isLoggedIn, customerRoutes.postCancelreservation);
->>>>>>> 02f15c1b5dd87ab91440d469a91851d1568d6dbc
 
     // app.post("/cancelreservation", function(req, res) {
     //     res.redirect("/cancelreservation");

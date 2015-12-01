@@ -94,10 +94,10 @@ module.exports = function(passport) {
                 newUserMysql.Password = password; // use the generateHash function in our user model
 			
 				var insertQuery = sqlCreator.newCustomer(username, password,req.body.email);
-				connection.query(insertQuery,function(err,rows){
+				connection.query(insertQuery, function(err,rows){
 					if (err) throw err;
 					return done(null, newUserMysql);
-				});	
+				});
 			}
         });
     }));

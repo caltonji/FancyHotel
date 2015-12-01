@@ -43,11 +43,22 @@ exports.fillCardsFromUser = function(req, res) {
 	req.flash('cards', exampleCards);
 }
 
-exports.fillReservationFromSession = function(req, res) {
-	if (req.session.reservation_update_id || req.session.reservation_cancel_id) {
-		//FIXME: get the actual reservation
-		req.flash('reservation', exampleReservation);
-	}
+exports.fillReservationFromUpdate = function(req, res, callback) {
+	getReservation(req.session.reservation_update_id, function(reservation) {
+		req.flash('reservation', reservation);
+		callback();
+	});
+}
+
+exports.fillReservationFromCancel = function(req, res, callback) {
+	getReservation(req.session.reservation_cancel_id, function(reservation) {
+		req.flash('reservation', reservation);
+		callback();
+	});
+}
+
+var getReservation = function(reservation_id, callback) {
+	callback(exampleReservation);
 }
 
 exports.fillReviews = function(req, res) {
@@ -55,9 +66,4 @@ exports.fillReviews = function(req, res) {
     	req.flash('reviews', exampleReviews);        
     }
 }
-
-
-
-
-
 

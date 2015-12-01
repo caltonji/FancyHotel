@@ -64,12 +64,12 @@ exports.findReview = function(location) {
 
 exports.createReviewNoComment = function(rating, location, username) {
 	return "INSERT INTO HOTEL_REVIEW ( Rating, Location, Username ) VALUES (" + mysql.escape(rating) + ","
-		+ mysql.escape(location) + "," + mysql.escape(username) + ";";
+		+ mysql.escape(location) + "," + mysql.escape(username) + ");";
 }
 
 exports.createReviewWithComment = function(comment, rating, location, username) {
 	return "INSERT INTO HOTEL_REVIEW ( Comment, Rating, Location, Username ) VALUES (" + mysql.escape(comment)
-		+ ","+ mysql.escape(rating) + "," + mysql.escape(location) + "," + mysql.escape(username) + ";";
+		+ ","+ mysql.escape(rating) + "," + mysql.escape(location) + "," + mysql.escape(username) + ");";
 }
 
 exports.searchRooms = function(roomArray) { //TODO: test this?

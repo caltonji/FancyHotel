@@ -3,6 +3,8 @@ var mysql = require('mysql');
 var flash = require('connect-flash');
 var session = require('express-session');
 
+var sqlCreator = require('../SqlStatementCreator');
+
 var connection = mysql.createConnection({
   host: "academic-mysql.cc.gatech.edu",
   user: "cs4400_Group_6",
@@ -11,6 +13,8 @@ var connection = mysql.createConnection({
 });
 //just never let the connection
 connection.connect()
+
+
 var exampleRooms1 = [{ Room_no : 211, Room_category : 'Suite', No_people : 4, Cost_day : 250, Cost_extra_bed_day : 150, location: "Atlanta"},
                         { Room_no : 103, Room_category : 'Standard', No_people : 2, Cost_day : 100, Cost_extra_bed_day : 70, location: "Atlanta"},
                          { Room_no : 222, Room_category : 'Standard', No_people : 6, Cost_day : 150, Cost_extra_bed_day : 50, location: "Atlanta"}];
@@ -133,9 +137,39 @@ exports.postCancelreservation = function(req,res) {
 exports.postGivereview = function(req,res) {
 	var location = req.body.location;
 	var rating = req.body.rating;
-	var comment = req.body.commentl
-	req.flash('success_message', "Your review of " + location + " was succesfully added. We appreciate your input!");
-	res.redirect('/home');
+	var comment = req.body.comment;
+
+	if (comment.length > 0) {
+		var query = sqlCreator.createReviewWithComment(comment, rating, location, req.user.Username);
+		console.log(query);
+		connection.query(query, function (err, rows) {
+			if (err) {
+				console.log(err);
+				req.flash('failure_message', "Error Connecting to DB. Try again.");
+				res.redirect('/givereview');
+			} else {
+				console.log(rows);
+				req.flash('success_message', "Your review of " + location + " was succesfully added. We appreciate your input!");
+				res.redirect('/home');
+			}
+		});
+	} else {
+		var query = sqlCreator.createReviewNoComment(rating, location, req.user.Username);
+		console.log(query);
+		connection.query(query, function (err, rows) {
+			if (err) {
+				console.log(err);
+				req.flash('failure_message', "Error Connecting to DB. Try again.");
+				res.redirect('/givereview');
+			} else {
+				console.log(rows);
+				req.flash('success_message', "Your review of " + location + " was succesfully added. We appreciate your input!");
+				res.redirect('/home');
+			}
+		});
+	}
+
+	
 }
 
 exports.postAddPaymentInfo = function(req, res) {
