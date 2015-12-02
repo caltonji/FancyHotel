@@ -32,7 +32,7 @@ exports.deletePaymentInformation = function(username, cardNo) {
 
 exports.findReservation = function(reservationID, username) {
 	return "SELECT * FROM RESERVATION WHERE Reservation_ID = " + mysql.escape(reservationID)
-		+ "AND username = " + mysql.escape(username) + ";";
+		+ " AND username = " + mysql.escape(username) + ";";
 }
 
 exports.createReservation = function(startDate, endDate, totalCost, isCancelled, cardNo, username, roomArray) { //roomArray = location, room_No, Extra_bed
