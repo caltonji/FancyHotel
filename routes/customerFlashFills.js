@@ -4,6 +4,7 @@ var express = require('express');
 var mysql = require('mysql');
 var flash = require('connect-flash');
 var session = require('express-session');
+var moment = require('moment');
 
 var connection = mysql.createConnection({
   host: "academic-mysql.cc.gatech.edu",
@@ -76,21 +77,41 @@ exports.fillCardsFromUser = function(req, res, callback) {
 }
 
 exports.fillReservationFromUpdate = function(req, res, callback) {
-	getReservation(req.session.reservation_update_id, function(reservation) {
+	getReservation(req.session.reservation_update_id,req.user.Username, function(reservation) {
 		req.flash('reservation', reservation);
 		callback();
 	});
 }
 
 exports.fillReservationFromCancel = function(req, res, callback) {
-	getReservation(req.session.reservation_cancel_id, function(reservation) {
+	  getReservation(req.session.reservation_cancel_id, req.user.Username, function(reservation) {
 		req.flash('reservation', reservation);
 		callback();
 	});
 }
 
-var getReservation = function(reservation_id, callback) {
-	callback(exampleReservation);
+var getReservation = function(reservation_id, username, callback) {
+    var data = {};
+    var query = sqlCreator.findReservation(reservation_id, username);
+    console.log(query);
+    connection.query(query, function(err, rows) {
+        //console.log(rows);
+        console.log('errors', err);
+        if (err) {
+            //req.flash('failure_message', 'Problem connecting to DB');
+            callback();
+        } else {
+            if (rows.length > 0) {
+                //req.flash('reservation', rows);
+                data = rows;
+                data[0].Start_date = moment(data[0].Start_date).format('YYYY-MM-DD');
+                data[0].End_date = moment(data[0].End_date).format('YYYY-MM-DD');
+            }
+            console.log(data);
+            callback(data);
+        }
+
+    })
 }
 
 exports.fillReviews = function(req, res) {
