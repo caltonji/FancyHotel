@@ -176,17 +176,42 @@ exports.postAddPaymentInfo = function(req, res) {
 	var newPaymentInfo = req.body;
 	newPaymentInfo.Username = req.user.Username;
 	console.log(newPaymentInfo);
-	var cardName = String(newPaymentInfo.Card_no);
-	req.flash('success_message', "New Payment Info for Card " + cardName.substr(cardName.length - 5) + " added.");
-	res.redirect('/paymentinfo');
+
+	var query = sqlCreator.addPaymentInformation(newPaymentInfo.Name, newPaymentInfo.Exp_date, newPaymentInfo.CVV, newPaymentInfo.Card_no, req.user.Username);
+	console.log(query);
+	connection.query(query, function (err, rows) {
+		if (err) {
+			console.log(err);
+			req.flash('failure_message', "Error Connecting to DB. Try again.");
+			res.redirect('/paymentinfo');
+		} else {
+			console.log(rows);
+			cardName = String(newPaymentInfo.Card_no);
+			req.flash('success_message', "New Payment Info for Card ending with '" + cardName.substr(cardName.length - 5) + "' added.");
+			res.redirect('/paymentinfo');
+		}
+	});
 }
 
 exports.postDeletePaymentInfo = function(req, res) {
 	var Card_no = req.body.delete_card;
 	console.log(Card_no);
-	var cardName = String(Card_no);
-	req.flash('success_message', "Payment Info for Card " + cardName.substr(cardName.length - 5) + " has been succesfully DELETED.");
-	res.redirect('/paymentinfo');
+	if (Card_no) {
+		var query = sqlCreator.deletePaymentInformation(req.user.Username, Card_no);
+		console.log(query);
+		connection.query(query, function (err, rows) {
+			if (err) {
+				console.log(err);
+				req.flash('failure_message', "Error Connecting to DB. Try again.");
+				res.redirect('/paymentinfo');
+			} else {
+				console.log(rows);
+				cardName = String(Card_no);
+				req.flash('success_message', "Payment Info for Card that ends with " + cardName.substr(cardName.length - 5) + " has been succesfully DELETED.");
+				res.redirect('/paymentinfo');
+			}
+		});
+	}
 }
 
 
