@@ -21,36 +21,40 @@
     <h1>Update Your Payment Information</h1>
 
     <!-- show any messages that come back with authentication -->
-    <% if (message.length > 0) { %>
-        <div class="alert alert-danger"><%= message %></div>
+    <% if (success_message.length > 0) { %>
+        <div class="alert alert-success"><%= success_message %></div>
+    <% } %>
+    <!-- show any messages that come back with authentication -->
+    <% if (failure_message.length > 0) { %>
+        <div class="alert alert-danger"><%= failure_message %></div>
     <% } %>
 
     <br>
     <div class="container">
-      <form class="form-horizontal" role="form">
+  <form id="addCardForm" class="form-horizontal" role="form" method="post" action="addPaymentInfo">
   <div class="form-group">
     <h4> Add Card </h4>
     <label class="control-label col-sm-2" for="card_name">Name on Card</label>
     <div class="col-sm-10">
-      <input type="text" class="form-control" id="card_name" placeholder="Name on Card">
+      <input type="text" class="form-control" id="card_name" placeholder="Name on Card" name="Name" required>
     </div>
   </div>
   <div class="form-group">
     <label class="control-label col-sm-2" for="card_number">Card Number</label>
     <div class="col-sm-10">
-      <input type="text" class="form-control" id="Card_no" placeholder="1111-1111-1111-1111">
+      <input type="text" class="form-control" pattern="\d{12,20}" id="Card_no" placeholder="1111222233334444" name="Card_no" title="12-20 digits" required>
     </div>
   </div>
   <div class="form-group">
     <label class="control-label col-sm-2" for="cardExpDate">Expiration Date</label>
       <div class="col-sm-10">
-        <input type="date" class="form-control" id="rcardExpDate" name="ExpDate" placeholder="Expiration Date" required>
+        <input type="text" class="form-control" id="rcardExpDate" name="Exp_date" pattern="\d{2}/\d{2}" placeholder="11/15" required title="mm/yy">
       </div>
   </div>
   <div class="form-group">
     <label class="control-label col-sm-2" for="ccv">CCV</label>
     <div class="col-sm-10">
-      <input type="text" class="form-control" id="ccv" placeholder="111">
+      <input type="text" pattern="\d{3,4}" class="form-control" id="ccv" placeholder="111" name="CVV" required title="3 or 4 digits">
     </div>
   </div>
   <div class="form-group">
@@ -58,14 +62,25 @@
       <button type="submit" class="btn btn-default">Save Payment Information</button>
     </div>
   </div>
+</form>
+
+<form id="deleteCardForm" class="form-horizontal" role="form" method="post" action="deletePaymentInfo">
     <div class="form-group">
         <h4> Delete Card </h4>
       <label class="control-label col-sm-2" for="Card Number">Card Number</label>
-      <div class="col-sm-10">
-        <select class="form-control" name="card_no" id="card_no_del" required placeholder="Choose Card">
-          <option value="">Choose Card</option>
-          <option value="Atlanta">Brad-credit card-1235</option>
-          <option value="Charlotte">Brad-debit card-7619</option>
+
+      <div class="form-group col-sm-10">
+        <label for="payment_info">Card To Delete</label>
+        <select class="form-control" name="delete_card" id="payment_info" required placeholder="Select Card">
+        <% if (cards.length > 0) { %>
+          <option value="">Select Card</option>
+          <% for (var j in cards) { %>
+            <% var card_no = String(cards[j].Card_no); %>
+            <option value="<%= card_no %>"><%= card_no.substr(card_no.length - 5) %></option>
+          <% } %>
+        <% } else { %>
+          <option value="">You have no cards registered with us.</option>
+        <% } %>
         </select>
       </div>
       <br><br>

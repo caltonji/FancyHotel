@@ -3,6 +3,8 @@ var mysql = require('mysql');
 var flash = require('connect-flash');
 var session = require('express-session');
 
+var sqlCreator = require('../SqlStatementCreator');
+
 var connection = mysql.createConnection({
   host: "academic-mysql.cc.gatech.edu",
   user: "cs4400_Group_6",
@@ -11,6 +13,8 @@ var connection = mysql.createConnection({
 });
 //just never let the connection
 connection.connect()
+
+
 var exampleRooms1 = [{ Room_no : 211, Room_category : 'Suite', No_people : 4, Cost_day : 250, Cost_extra_bed_day : 150, location: "Atlanta"},
                         { Room_no : 103, Room_category : 'Standard', No_people : 2, Cost_day : 100, Cost_extra_bed_day : 70, location: "Atlanta"},
                          { Room_no : 222, Room_category : 'Standard', No_people : 6, Cost_day : 150, Cost_extra_bed_day : 50, location: "Atlanta"}];
@@ -20,8 +24,6 @@ var exampleRooms2 = [{ Room_no : 211, Room_category : 'Suite', No_people : 4, Co
 
 var exampleCards = [{Card_no : 12312341234, Name : "Personal"},
 					{Card_no : 1142243212, Name : "Business"}]
-
-
 
 exports.postFindRooms = function(req,res) {
 	console.log("startdate: " + req.body.startDate + " end date " + req.body.endDate + " location " + req.body.location);
@@ -135,11 +137,82 @@ exports.postCancelreservation = function(req,res) {
 exports.postGivereview = function(req,res) {
 	var location = req.body.location;
 	var rating = req.body.rating;
-	var comment = req.body.commentl
-	req.flash('success_message', "Your review of " + location + " was succesfully added. We appreciate your input!");
-	res.redirect('/home');
+	var comment = req.body.comment;
+
+	if (comment.length > 0) {
+		var query = sqlCreator.createReviewWithComment(comment, rating, location, req.user.Username);
+		console.log(query);
+		connection.query(query, function (err, rows) {
+			if (err) {
+				console.log(err);
+				req.flash('failure_message', "Error Connecting to DB. Try again.");
+				res.redirect('/givereview');
+			} else {
+				console.log(rows);
+				req.flash('success_message', "Your review of " + location + " was succesfully added. We appreciate your input!");
+				res.redirect('/home');
+			}
+		});
+	} else {
+		var query = sqlCreator.createReviewNoComment(rating, location, req.user.Username);
+		console.log(query);
+		connection.query(query, function (err, rows) {
+			if (err) {
+				console.log(err);
+				req.flash('failure_message', "Error Connecting to DB. Try again.");
+				res.redirect('/givereview');
+			} else {
+				console.log(rows);
+				req.flash('success_message', "Your review of " + location + " was succesfully added. We appreciate your input!");
+				res.redirect('/home');
+			}
+		});
+	}
+
+	
 }
 
+exports.postAddPaymentInfo = function(req, res) {
+	var newPaymentInfo = req.body;
+	newPaymentInfo.Username = req.user.Username;
+	console.log(newPaymentInfo);
+
+	var query = sqlCreator.addPaymentInformation(newPaymentInfo.Name, newPaymentInfo.Exp_date, newPaymentInfo.CVV, newPaymentInfo.Card_no, req.user.Username);
+	console.log(query);
+	connection.query(query, function (err, rows) {
+		if (err) {
+			console.log(err);
+			req.flash('failure_message', "Error Connecting to DB. Try again.");
+			res.redirect('/paymentinfo');
+		} else {
+			console.log(rows);
+			cardName = String(newPaymentInfo.Card_no);
+			req.flash('success_message', "New Payment Info for Card ending with '" + cardName.substr(cardName.length - 5) + "' added.");
+			res.redirect('/paymentinfo');
+		}
+	});
+}
+
+exports.postDeletePaymentInfo = function(req, res) {
+	var Card_no = req.body.delete_card;
+	console.log(Card_no);
+	if (Card_no) {
+		var query = sqlCreator.deletePaymentInformation(req.user.Username, Card_no);
+		console.log(query);
+		connection.query(query, function (err, rows) {
+			if (err) {
+				console.log(err);
+				req.flash('failure_message', "Error Connecting to DB. Try again.");
+				res.redirect('/paymentinfo');
+			} else {
+				console.log(rows);
+				cardName = String(Card_no);
+				req.flash('success_message', "Payment Info for Card that ends with " + cardName.substr(cardName.length - 5) + " has been succesfully DELETED.");
+				res.redirect('/paymentinfo');
+			}
+		});
+	}
+}
 
 
 

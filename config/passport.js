@@ -46,9 +46,18 @@ module.exports = function(passport) {
     // used to deserialize the user
     passport.deserializeUser(function(username, done) {
         connection.query(sqlCreator.findCustomer(username),function(err,rows){	
-			done(err, rows[0]);
+            if (rows.length == 0) {
+                connection.query(sqlCreator.findManager(username),function(err2,rows2){  
+                    done(err, rows2[0]);
+                });
+            } else {
+                done(err, rows[0]);
+            }
 		});
     });
+
+
+
     // =========================================================================
     // LOCAL SIGNUP ============================================================
     // =========================================================================
@@ -85,10 +94,10 @@ module.exports = function(passport) {
                 newUserMysql.Password = password; // use the generateHash function in our user model
 			
 				var insertQuery = sqlCreator.newCustomer(username, password,req.body.email);
-				connection.query(insertQuery,function(err,rows){
+				connection.query(insertQuery, function(err,rows){
 					if (err) throw err;
 					return done(null, newUserMysql);
-				});	
+				});
 			}
         });
     }));
@@ -102,11 +111,6 @@ module.exports = function(passport) {
     function(req, username, password, done) {
     	console.log('new sign in request');
     	console.log(req.body);
-
-    	if (req.body.password1 != req.body.password2) {
-    		return done(null, false, req.flash('signupMessage', 'Your passwords need to match.'));
-    	}
-
         
         //if emails need to be unique as well then this query needs to end with  OR Email = " + req.body.email + "';"
         console.log("checking sql creator");
@@ -126,6 +130,37 @@ module.exports = function(passport) {
 	            // all is well, return successful user
 	            return done(null, rows[0]);		
 			}
+        });
+    }));
+
+    passport.use('local-management-login', new LocalStrategy({
+        // by default, local strategy uses username and password, we will override with email
+        usernameField : 'username',
+        passwordField : 'password',
+        passReqToCallback : true // allows us to pass back the entire request to the callback
+    },
+    function(req, username, password, done) {
+        console.log('new sign in request');
+        console.log(req.body);
+        
+        //if emails need to be unique as well then this query needs to end with  OR Email = " + req.body.email + "';"
+        console.log("checking sql creator");
+        console.log(sqlCreator.findManager(username));
+        connection.query(sqlCreator.findManager(username), function(err,rows) {
+            console.log(rows);
+            console.log("above row object");
+            if (err)
+                return done(err);
+            if (!rows.length) {
+                return done(null, false, req.flash('loginMessage', "Username not found"));
+            } else {
+                // if the user is found but the password is wrong
+                if (rows[0].Password != password)
+                    return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.')); // create the loginMessage and save it to session as flashdata
+            
+                // all is well, return successful user
+                return done(null, rows[0]);     
+            }
         });
     }));
 };

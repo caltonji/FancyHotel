@@ -57,18 +57,18 @@ exports.updateReservation = function(reservationID, username, new_Start_date, ne
 
 //check for available room query
 
-exports.findReview = function(location) {
+exports.findReviews = function(location) {
 	return "SELECT Rating, Comment FROM HOTEL_REVIEW WHERE Location = " + mysql.escape(location) + ";";
 }
 
 exports.createReviewNoComment = function(rating, location, username) {
 	return "INSERT INTO HOTEL_REVIEW ( Rating, Location, Username ) VALUES (" + mysql.escape(rating) + ","
-		+ mysql.escape(location) + "," + mysql.escape(username) + ";";
+		+ mysql.escape(location) + "," + mysql.escape(username) + ");";
 }
 
 exports.createReviewWithComment = function(comment, rating, location, username) {
 	return "INSERT INTO HOTEL_REVIEW ( Comment, Rating, Location, Username ) VALUES (" + mysql.escape(comment)
-		+ ","+ mysql.escape(rating) + "," + mysql.escape(location) + "," + mysql.escape(username) + ";";
+		+ ","+ mysql.escape(rating) + "," + mysql.escape(location) + "," + mysql.escape(username) + ");";
 }
 
 exports.searchRooms = function(roomArray) { //TODO: test this?
@@ -115,4 +115,3 @@ exports.createRevenueReport = function(month_number) { //This will need to be ru
 	return "SELECT location, SUM(Total_cost) FROM ROOM NATURAL JOIN HAS_ROOM NATURAL JOIN RESERVATION WHERE MONTH(Start_date) = "
 		+ mysql.escape(month_number) + "AND Is_cancelled = " + mysql.escape(0) + " GROUP BY location";
 } //Returns tuples in the form (location, SUM(Total_cost))
-
