@@ -51,11 +51,6 @@ exports.updateReservation = function(reservationID, username, new_Start_date, ne
 		+ mysql.escape(new_End_date) + " WHERE  Reservation_ID = " + mysql.escape(reservationID) + " AND username = "
 		+ mysql.escape(username) + ";";
 }
-//change start and end date of a reservation. Pass in reservationID, username, new dates
-
-//need to check if room is available with 1 query THEN update reservation
-
-//check for available room query
 
 exports.findReviews = function(location) {
 	return "SELECT Rating, Comment FROM HOTEL_REVIEW WHERE Location = " + mysql.escape(location) + ";";
@@ -98,6 +93,11 @@ exports.searchAvailableRooms = function(location, start_date, end_date) {
 		+ "AND " + mysql.escape(end_date) + " <= End_Date) OR (" + mysql.escape(start_date) + " >= Start_Date AND "
 		+ mysql.escape(start_date) + " <= End_Date) OR (" + mysql.escape(end_date) + " >= Start_Date AND "
 		+ mysql.escape(end_date) + " <= End_Date)));";
+}
+
+exports.searchRoomsByID = function(reservationID) {
+	return "SELECT Room_no, Location, No_people, Cost_of_extra_bed_per_day, Room_category, Cost_day, Extra_bed FROM "
+		+ " ROOM NATURAL JOIN HAS_ROOM WHERE Reservation_Id = " + mysql.escape(reservationID) + ";";
 }
 
 exports.createReservationReport = function(month_number) { //This will need to be run once for each month
