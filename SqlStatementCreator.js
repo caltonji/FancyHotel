@@ -122,7 +122,7 @@ exports.createPopularRoomReport = function(month_number) { //This will need to b
 } //Returns tuples in the form (location, Room_category, count)
 
 exports.createMonthlyReport = function(month_number, city) { //This will need to be run once for each month and city
-	return "SELECT " + mysql.escape(city) + " AS City, IFNULL(NOREFUND.cost," + mysql.escape(0) + ") + IFNULL(PARTIAL.cost, " + mysql.escape(0) + ") + IFNULL(BASE.cost," + mysql.escape(0) + ") AS Revenue "
+	return "SELECT " + mysql.escape(month_number) + "AS Month, " + mysql.escape(city) + " AS City, IFNULL(NOREFUND.cost," + mysql.escape(0) + ") + IFNULL(PARTIAL.cost, " + mysql.escape(0) + ") + IFNULL(BASE.cost," + mysql.escape(0) + ") AS Revenue "
 		+ " FROM (SELECT SUM( Total_cost ) AS cost "
 			+ " FROM ROOM NATURAL JOIN RESERVATION NATURAL JOIN HAS_ROOM WHERE MONTH( Start_date ) =  " + mysql.escape(month_number) + " AND Is_cancelled = " + mysql.escape(0)
 			+ " AND Location =" + mysql.escape(city) + ")AS BASE, "
