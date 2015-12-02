@@ -40,7 +40,7 @@ exports.createReservation = function(startDate, endDate, totalCost, isCancelled,
 		+ mysql.escape(startDate) + "," + mysql.escape(endDate) + "," + mysql.escape(totalCost) + "," + mysql.escape(isCancelled)
 		+ "," + mysql.escape(cardNo) + "," + mysql.escape(username) + ");";
 
-	query = query + "INSERT INTO HAS_ROOM (Reservation_ID, Extra_bed, Room_no, location) VALUES (@@IDENTITY, "
+	query = query + "INSERT INTO HAS_ROOM (Reservation_ID, Extra_bed, Room_no, location) VALUES (@@IDENTITY, ";
 
 	for (var i = 0; i < roomArray.length; i++) {
 
