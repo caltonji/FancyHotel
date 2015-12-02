@@ -58,7 +58,7 @@ exports.updateReservation = function(reservationID, username, new_Start_date, ne
 //check for available room query
 
 
-exports.findReview = function(location) {
+exports.findReviews = function(location) {
 	return "SELECT Rating, Comment FROM HOTEL_REVIEW WHERE Location = " + mysql.escape(location) + ";";
 }
 

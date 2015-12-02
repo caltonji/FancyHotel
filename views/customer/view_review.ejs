@@ -24,8 +24,8 @@
     <h1>View Review</h1>
 
     <!-- show any messages that come back with authentication -->
-    <% if (message.length > 0) { %>
-        <div class="alert alert-danger"><%= message %></div>
+    <% if (failure_message.length > 0) { %>
+        <div class="alert alert-danger"><%= failure_message %></div>
     <% } %>
 
     <br>
@@ -66,7 +66,7 @@
           <tr class="review">
             <td><%= review.Rating %></td>
             <td><%= review.Comment %></td>
-            <td><%= review.Location %></td>
+            <td><%= location %></td>
           </tr>
         <% } %>
       </tbody>

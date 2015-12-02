@@ -24,59 +24,60 @@ var exampleRooms2 = [{ Room_no : 211, Room_category : 'Suite', No_people : 4, Co
                         { Room_no : 103, Room_category : 'Standard', No_people : 2, Cost_day : 100, Cost_extra_bed_day : 70, location: "Atlanta"}];
 
 var exampleCards = [{Card_no : 12312341234, Name : "Personal"},
-					{Card_no : 1142243212, Name : "Business"}]
+                    {Card_no : 1142243212, Name : "Business"}]
 
 var exampleReservation = [{ Reservation_ID : 1234,
-						   Start_date : '2015-12-02',
-						End_date : '2015-12-07',
-						Total_cost : 1050.0,
-						Is_cancelled : 0,
-						Card_no	: 123412341234,
-						Username : "caltonji"}];
+                           Start_date : '2015-12-02',
+                        End_date : '2015-12-07',
+                        Total_cost : 1050.0,
+                        Is_cancelled : 0,
+                        Card_no : 123412341234,
+                        Username : "caltonji"}];
 var exampleReviews = [{ Comment : "You suck", Rating : "Very Bad", Location : "Atlanta"},
-						{ Comment : "You're awesome", Rating : "Good", Location : "Atlanta"}];
+                        { Comment : "You're awesome", Rating : "Good", Location : "Atlanta"}];
 
 
 exports.fillRoomsFromReservationId = function(req,res) {
-	if (req.session.reservation_cancel_id) {
-		req.flash('rooms', exampleRooms1);
-	}
+    if (req.session.reservation_cancel_id) {
+        req.flash('rooms', exampleRooms1);
+    }
 }
 
 exports.fillRoomsFromSessionDates = function(req, res) {
-	//set variables in first part the run sql query
-	if (req.session.reservation_startDate) {
-		console.log("startdate: " + req.session.reservation_startDate
-					+ " end date " +  req.session.reservation_endDate
-					+ " location " + req.session.reservation_location);
-	} else if (req.session.update_reservation_startDate) {
-		// console.log("");
-	} else return;
-	req.flash('rooms', exampleRooms1);
+    //set variables in first part the run sql query
+    if (req.session.reservation_startDate) {
+        console.log("startdate: " + req.session.reservation_startDate
+                    + " end date " +  req.session.reservation_endDate
+                    + " location " + req.session.reservation_location);
+    } else if (req.session.update_reservation_startDate) {
+        // console.log("");
+    } else return;
+    req.flash('rooms', exampleRooms1);
 }
 
 exports.fillCardsFromUser = function(req, res, callback) {
-	var Username = req.user.Username;
-	console.log({Username : Username});
-	var data = {};
-	var query = sqlCreator.findPaymentInformation(Username);
-	console.log(query);
-	connection.query(query, function(err, rows) {
-		console.log(rows);
-		console.log('errors',err);
-		if (err) {
-			req.flash('failure_message', 'Problem connecting to DB');
-			callback();
-		} else {
-			if (rows.length > 0) {
-				req.flash('cards', rows);
-			}
-			callback();
-		}
-	});
+    var Username = req.user.Username;
+    console.log({Username : Username});
+    var data = {};
+    var query = sqlCreator.findPaymentInformation(Username);
+    console.log(query);
+    connection.query(query, function(err, rows) {
+        console.log(rows);
+        console.log('errors',err);
+        if (err) {
+            req.flash('failure_message', 'Problem connecting to DB');
+            callback();
+        } else {
+            if (rows.length > 0) {
+                req.flash('cards', rows);
+            }
+            callback();
+        }
+    });
 }
 
 exports.fillReservationFromUpdate = function(req, res, callback) {
+<<<<<<< HEAD
 	getReservation(req.session.reservation_update_id,req.user.Username, function(reservation) {
 		req.flash('reservation', reservation);
 		callback();
@@ -112,10 +113,3 @@ var getReservation = function(reservation_id, username, callback) {
         }
 
     })
-}
-
-exports.fillReviews = function(req, res) {
-	if (req.query.location) {
-    	req.flash('reviews', exampleReviews);
-    }
-}
