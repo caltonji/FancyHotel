@@ -57,7 +57,6 @@ exports.updateReservation = function(reservationID, username, new_Start_date, ne
 
 //check for available room query
 
-
 exports.findReview = function(location) {
 	return "SELECT Rating, Comment FROM HOTEL_REVIEW WHERE Location = " + mysql.escape(location) + ";";
 }
@@ -92,8 +91,13 @@ exports.searchRooms = function(roomArray) { //TODO: test this?
 	return query;
 }
 
-exports.searchAvailableRooms = function(start_date, end_date, location) {
-	return sele
+exports.searchAvailableRooms = function(location, start_date, end_date) {
+	return "SELECT * FROM ROOM WHERE LOCATION = " + mysql.escape(location) +" AND NOT EXISTS (SELECT Room_no FROM "
+		+ "HAS_ROOM NATURAL JOIN RESERVATION WHERE ROOM.Room_no = HAS_ROOM.Room_no AND ROOM.location = HAS_ROOM.location "
+		+ "AND RESERVATION.Is_cancelled = " + mysql.escape(0) +" AND ((" + mysql.escape(start_date) + " >= Start_date "
+		+ "AND " + mysql.escape(end_date) + " <= End_Date) OR (" + mysql.escape(start_date) + " >= Start_Date AND "
+		+ mysql.escape(start_date) + " <= End_Date) OR (" + mysql.escape(end_date) + " >= Start_Date AND "
+		+ mysql.escape(end_date) + " <= End_Date)));";
 }
 
 exports.createReservationReport = function(month_number) { //This will need to be run once for each month
