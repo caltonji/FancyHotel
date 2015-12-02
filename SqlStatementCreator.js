@@ -89,20 +89,15 @@ exports.searchRooms = function(roomArray) { //TODO: test this?
 exports.searchAvailableRooms = function(location, start_date, end_date) {
 	return "SELECT * FROM ROOM WHERE LOCATION = " + mysql.escape(location) +" AND NOT EXISTS (SELECT Room_no FROM "
 		+ "HAS_ROOM NATURAL JOIN RESERVATION WHERE ROOM.Room_no = HAS_ROOM.Room_no AND ROOM.location = HAS_ROOM.location "
-		+ "AND RESERVATION.Is_cancelled = " + mysql.escape(0) +" AND ((" + mysql.escape(start_date) + " >= Start_date "
-		+ "AND " + mysql.escape(end_date) + " <= End_Date) OR (" + mysql.escape(start_date) + " >= Start_Date AND "
-		+ mysql.escape(start_date) + " <= End_Date) OR (" + mysql.escape(end_date) + " >= Start_Date AND "
-		+ mysql.escape(end_date) + " <= End_Date)));";
+		+ "AND RESERVATION.Is_cancelled = " + mysql.escape(0) + " AND (( " + mysql.escape(start_date) + " <= End_date AND "
+		+ mysql.escape(end_date) + " >= End_date)));";
 }
 
 exports.searchAvailableUpdate = function(location, room_no, start_date, end_date) {
 	return "SELECT * FROM ROOM NATURAL JOIN HAS_ROOM WHERE ROOM_NO =" + mysql.escape(room_no) + " AND LOCATION = "
 			+ mysql.escape(location) +" AND NOT EXISTS (SELECT Room_no, Extra_bed FROM HAS_ROOM NATURAL JOIN RESERVATION"
 	 		+ " WHERE ROOM.Room_no = HAS_ROOM.Room_no AND ROOM.location = HAS_ROOM.location AND RESERVATION.Is_cancelled"
-			+ "= " + mysql.escape(0) + " AND ((" + mysql.escape(start_date) + " >= Start_date AND "
-			+ mysql.escape(end_date) + " <= End_Date) OR (" + mysql.escape(start_date) + " >= Start_Date AND "
-			+ mysql.escape(start_date) + " <= End_Date) OR (" + mysql.escape(end_date) + " >= Start_Date AND "
-			+ mysql.escape(end_date) + " <= End_Date)));";
+			+ "= " + mysql.escape(0) + " AND (( " + mysql.escape(start_date) + " <= End_date AND " + mysql.escape(end_date) + " >= End_date)));";
 }
 
 exports.searchRoomsByID = function(reservationID) {
