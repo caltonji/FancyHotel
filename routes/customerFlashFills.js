@@ -37,13 +37,82 @@ var exampleReviews = [{ Comment : "You suck", Rating : "Very Bad", Location : "A
                         { Comment : "You're awesome", Rating : "Good", Location : "Atlanta"}];
 
 
-exports.fillRoomsFromReservationId = function(req,res) {
+exports.fillRoomsFromCancelReservationId = function(req,res, callback) {
     if (req.session.reservation_cancel_id) {
-        req.flash('rooms', exampleRooms1);
+        getRooms(req.session.reservation_cancel_id, function(rooms) {
+                req.flash('rooms', rooms);
+                callback();
+        });
     }
 }
 
 exports.fillRoomsForAvailable = function(req, res, callback) {
+// =======
+// exports.fillRoomsOnUpdate = function(req,res, callback) {
+    if (req.session.reservation_id) {
+        getRooms(req.session.reservation_id, function(rooms) {
+                req.flash('rooms', rooms);
+                callback();
+        });
+    }
+}
+
+var getUpdateRooms = function(reservation_id, start_date, end_date ,callback) {
+    var roomdata ={};
+    var query1 = sqlCreator.searchRoomsByID(reservation_id);
+    connection.query1(query1, function(err, rows){
+        if (err) {
+            callback();
+        } else {
+            if (rows.length> 0) {
+                roomdata = rows;
+            }
+            //callback(roomdata);
+        }
+    })
+    var counter = 0;
+    for (var i = 0; i < roomdata.length; i++) {
+
+        var query = sqlCreator.searchAvailableUpdate(roomdata[i].Location, roomdata[i].Room_no, start_date, end_date);
+        console.log(query);
+        connection.query(query, function(err, rows) {
+            console.log('errors', err);
+            if (err) {
+                callback();
+            }  else {
+                counter++;
+            }
+        })
+    }
+
+    if (counter == roomdata.length) {
+        callback(roomdata);
+    } else {
+        callback(0);
+    }
+}
+var getRooms = function(reservation_id, callback) {
+    var data = {};
+    var query = sqlCreator.searchRoomsByID(reservation_id);
+    console.log(query);
+    connection.query(query, function(err, rows) {
+        //console.log(rows);
+        console.log('errors', err);
+        if (err) {
+            //req.flash('failure_message', 'Problem connecting to DB');
+            callback();
+        } else {
+            if (rows.length > 0) {
+                //req.flash('reservation', rows);
+                data = rows;
+            }
+            console.log(data);
+            callback(data);
+        }
+    });
+}
+
+exports.fillRoomsFromSessionDates = function(req, res) {
     //set variables in first part the run sql query
     if (req.session.reservation_startDate) {
         var startDate = req.session.reservation_startDate;
@@ -131,6 +200,5 @@ var getReservation = function(reservation_id, username, callback) {
             console.log(data);
             callback(data);
         }
-
     });
 }

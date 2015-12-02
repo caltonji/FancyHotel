@@ -47,11 +47,11 @@
     <% } %>
 
     <br>
-    
+
     <% if (rooms.length > 0 && session.reservation_cancel_id && reservation.length) { %>
 
     <script>
-      // values to keep from the session/from the 
+      // values to keep from the session/from the
       var oldCost = <%= reservation[0].Total_cost %>;
 
       var startDate = "<%= reservation[0].Start_date %>";
@@ -63,7 +63,7 @@
         console.log(days);
         return days;
         // var timeDiff = Math.abs(date2.getTime() - date1.getTime());
-        // return Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+        // return Math.ceil(timeDiff / (1000 * 3600 * 24));
       }
       var diffDays = differenceDays(startDate, endDate);
     </script>
@@ -84,25 +84,27 @@
         <table class="w3-table-all" style="width:100%">
         <tbody>
           <tr>
+             <th>Location</th>
             <th>Room Number</th>
             <th>Room Category</th>
             <th># Persons Allowed</th>
             <th>Cost per Day</th>
-            <th>Cost of Extra Bed per Day</th>
-            <th>Extra Bed</th>
+            <!-- <th>Cost of Extra Bed per Day</th>
+            <th>Extra Bed</th> -->
           </tr>
         <% for (var i in rooms) { %>
           <% var room = rooms[i]; %>
           <tr class="available_room" roomcost="<%= room.Cost_day %>">
+            <td><%= room.Location %></td>
             <td><%= room.Room_no %></td>
             <td><%= room.Room_category %></td>
             <td><%= room.No_people %></td>
             <td><%= room.Cost_day %></td>
             <td><%= room.Cost_extra_bed_day %></td>
-            <td>
+            <!-- <td>
               <!-- This is not an easy problem to fix -->
-              Yes
-            </td>
+              <!-- Yes -->
+            <!-- </td> -->
           </tr>
         <% } %>
         </tbody>
@@ -125,15 +127,17 @@
     <!-- display reservation ID -->
     <script>
 
-    $( document ).ready(function() {   
+    $( document ).ready(function() {
 
       var today = new moment().format("YYYY-MM-DD");
       $("#cancellationDate").attr('value', today);
 
       var totalCost = <%= reservation[0].Total_cost %>;
       var refundAmount = totalCost;
-      if (differenceDays(today, startDate) < 3) {
-        refundAmount *= 0.8;
+      if (differenceDays(today, startDate) < 4 && differenceDays(today,startDate) > 1) {
+          refundAmount *= 0.8;
+      } else if (differenceDays(today, startDate) < 2) {
+          refundAmount = 0;
       }
       $('#refund_amount').text(refundAmount);
       $('#hiddenRefundAmount').attr('value', refundAmount);
@@ -147,7 +151,7 @@
       //       roomCost += parseInt($(this).attr('bedcost'));
 
       //     totalCost += roomCost * diffDays;
-      //   }).promise().done( function() { 
+      //   }).promise().done( function() {
       //     $('#total_cost').text(totalCost);
       //     $('#hiddenTotalCostInput').attr('value', totalCost);
       //   });
@@ -158,7 +162,7 @@
       //   var date1 = new Date("7/11/2010");
       //   var date2 = new Date("12/12/2010");
       //   var timeDiff = Math.abs(date2.getTime() - date1.getTime());
-      //   var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+      //   var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
       // }
     });
 
@@ -167,17 +171,7 @@
     <% } else { %>
       <h4>Can't find reservation. <a href="/lookupreservation">Lookup Another</a></h2>
     <% } %>
-
-
-
-    
-
-
-
-<!-- 
-
-
-    
+<!--
     <div class="container">
       <form class="form-horizontal" role="form">
         <div class="form-group">
@@ -229,7 +223,7 @@
         <button type="submit" class="btn btn-default">Cancel Reservation</button>
     </div> -->
 
-    
+
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="../js/bootstrap.min.js"></script>
   </body>

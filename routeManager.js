@@ -113,9 +113,10 @@ module.exports = function(app, passport) {
 
     app.get("/cancelreservation/:cancel_id", isLoggedIn, function(req,res) {
         req.session.reservation_cancel_id = req.params.cancel_id;
-        flashFills.fillRoomsFromReservationId(req, res);
-        flashFills.fillReservationFromCancel(req, res, function() {
-            res.render("customer/cancel_reservation.ejs", { reservation : req.flash('reservation'), rooms : req.flash('rooms'), message: req.flash('reservationMessage'), session : req.session });
+        flashFills.fillRoomsFromCancelReservationId(req, res, function() {
+            flashFills.fillReservationFromCancel(req, res, function() {
+                res.render("customer/cancel_reservation.ejs", { reservation : req.flash('reservation'), rooms : req.flash('rooms'), message: req.flash('reservationMessage'), session : req.session });
+            });
         });
     });
 
@@ -137,7 +138,7 @@ module.exports = function(app, passport) {
     app.get('/managerhome', isLoggedIn, function(req, res) {
         res.render("manager/manager_home.ejs", {username : req.user.Username});
     });
-    
+
     app.get("/reservationreport", isLoggedIn, function(req,res) {
         managerFlashFills.fillReservationreport(req,res,function(){
             res.render("manager/reservation_report.ejs", { reservationreports : req.flash('reservationreports'),message: req.flash('message') });
