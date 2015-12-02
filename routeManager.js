@@ -65,8 +65,8 @@ module.exports = function(app, passport) {
 
     app.get("/reservationdetails", isLoggedIn, function(req,res) {
         flashFills.fillCardsFromUser(req, res, function() {
-					  res.render("customer/reservation_details.ejs", {cards : req.flash('cards'), rooms : req.flash('rooms'), message: req.flash('reservationMessage'), session : req.session });
-				});
+            res.render("customer/reservation_details.ejs", {cards : req.flash('cards'), rooms : req.flash('rooms'), message: req.flash('reservationMessage'), session : req.session });
+        });
     });
 
     app.get("/updatereservation1", isLoggedIn, function(req,res) {
@@ -75,8 +75,8 @@ module.exports = function(app, passport) {
 
     app.get("/paymentinfo", isLoggedIn, function(req,res) {
         flashFills.fillCardsFromUser(req, res, function() {
-					res.render("customer/payment_info.ejs", { cards : req.flash('cards'), success_message: req.flash('success_message'), failure_message : req.flash('failure_message') });
-				});
+            res.render("customer/payment_info.ejs", { cards : req.flash('cards'), success_message: req.flash('success_message'), failure_message : req.flash('failure_message') });
+        });
     });
 
     app.get("/updatereservation1", isLoggedIn, function(req,res) {
@@ -123,8 +123,9 @@ module.exports = function(app, passport) {
     });
 
     app.get("/viewreview", isLoggedIn, function(req,res) {
-        flashFills.fillReviews(req,res);
-        res.render("customer/view_review.ejs", { location : req.query.location, reviews : req.flash('reviews'), message: req.flash('reservationMessage') });
+        flashFills.fillReviews(req,res, function() {
+            res.render("customer/view_review.ejs", { location : req.query.location, reviews : req.flash('reviews'), failure_message: req.flash('failure_message') });
+        });
     });
 
     app.get("/givereview", isLoggedIn, function(req,res) {
@@ -132,27 +133,27 @@ module.exports = function(app, passport) {
     });
 
     //manager get routes
-
     app.get('/managerhome', isLoggedIn, function(req, res) {
         res.render("manager/manager_home.ejs", {username : req.user.Username});
     });
+    
     app.get("/reservationreport", isLoggedIn, function(req,res) {
-				managerFlashFills.fillReservationreport(req,res,function(){
-					res.render("manager/reservation_report.ejs", { reservationreports : req.flash('reservationreports'),message: req.flash('message') });
-				});
-		});
+        managerFlashFills.fillReservationreport(req,res,function(){
+            res.render("manager/reservation_report.ejs", { reservationreports : req.flash('reservationreports'),message: req.flash('message') });
+        });
+    });
 
     app.get("/poproomreport", isLoggedIn, function(req,res) {
-				managerFlashFills.fillPopularRoomReport(req,res, function() {
-				res.render("manager/popularRoom_report.ejs", { roomcatreports : req.flash('roomcatreports'), message: req.flash('reservationMessage') });
-				});
+        managerFlashFills.fillPopularRoomReport(req,res, function() {
+            res.render("manager/popularRoom_report.ejs", { roomcatreports : req.flash('roomcatreports'), message: req.flash('reservationMessage') });
+        });
     });
 
     app.get("/revenuereport", isLoggedIn, function(req,res) {
-				managerFlashFills.fillRevenueReport(req,res, function() {
-			   res.render("manager/revenue_report.ejs", { revenuereports: req.flash('revenuereports'), message: req.flash('message') });
-				});
-		});
+        managerFlashFills.fillRevenueReport(req,res, function() {
+            res.render("manager/revenue_report.ejs", { revenuereports: req.flash('revenuereports'), message: req.flash('message') });
+        });
+    });
 
 
 
