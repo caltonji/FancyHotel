@@ -110,16 +110,16 @@ exports.postReservationDetails = function(req, res) {
 	req.session.reservation_startDate = null;
 	req.session.reservation_endDate = null;
 	req.session.reservation_location = null;
-	console.log("startdate: " + startDate + " end date " + endDate + " location " + location);
+	// console.log("startdate: " + startDate + " end date " + endDate + " location " + location);
 	var totalCost = parseInt(req.body.totalCost);
 	var isCancelled = 0;
 	var Card_no = req.body.payment_info;
-	console.log({totalCost : totalCost, isCancelled : isCancelled, Card_no : Card_no});
+	// console.log({totalCost : totalCost, isCancelled : isCancelled, Card_no : Card_no});
 	
 	var rooms = req.session.rooms_for_reservation;
-	console.log({rooms : rooms});
+	// console.log({rooms : rooms});
 	var checked_rooms = getRooms(req.body.extra_bed);
-	console.log({checked_rooms : checked_rooms});
+	// console.log({checked_rooms : checked_rooms});
 
 	for (var room_key in rooms) {
 		var room = rooms[room_key];
@@ -129,33 +129,27 @@ exports.postReservationDetails = function(req, res) {
 			rooms[room_key].Extra_bed = 0;
 		}
 	}
-	console.log({rooms : rooms});
+	// console.log({rooms : rooms});
 	if (Card_no) {
-		createReservation = function(startDate, endDate, totalCost, isCancelled, cardNo, username)
-		var query = sqlCreator.createReservation(startDate, endDate, totalCost, 0, Card_no, req.user.Username);
+		//createReservation = function(startDate, endDate, totalCost, isCancelled, cardNo, username, roomArray) 
+		var query = sqlCreator.createReservation(startDate, endDate, totalCost, 0, Card_no, req.user.Username, rooms);
 		console.log(query);
 		connection.query(query, function (err, rows) {
 			if (err) {
 				console.log(err);
 				req.flash('failure_message', "Error Connecting to DB. Try again.");
-				res.redirect('/paymentinfo');
+				res.redirect('/reservationdetails');
 			} else {
 				console.log(rows);
-				cardName = String(Card_no);
-				req.flash('success_message', "Payment Info for Card that ends with " + cardName.substr(cardName.length - 5) + " has been succesfully DELETED.");
-				res.redirect('/paymentinfo');
+
+				req.session.last_reservation_id = 12343;
+				res.render('customer/reservationid.ejs', {session : req.session});
 			}
 		});
 	} else {
-		req.flash('success_message', "Payment Info for Card that ends with " + cardName.substr(cardName.length - 5) + " has been succesfully DELETED.");
-		res.redirect('/paymentinfo');
+		req.flash('message', "Oops. Something went wrong, try again.");
+		res.redirect('/reservationdetails');
 	}
-
-
-	console.log("totalCost: " + totalCost + " isCancelled: " + isCancelled + " Card_no: " + Card_no);	
-	req.session.last_reservation_id = 12343;
-	res.render('customer/reservationid.ejs', {session : req.session});
-
 }
 
 

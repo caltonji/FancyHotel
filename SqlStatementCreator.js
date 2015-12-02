@@ -32,19 +32,34 @@ exports.deletePaymentInformation = function(username, cardNo) {
 
 exports.findReservation = function(reservationID, username) {
 	return "SELECT * FROM RESERVATION WHERE Reservation_ID = " + mysql.escape(reservationID)
-		+ "AND username = " + mysql.escape(username) + ";";
+		+ " AND username = " + mysql.escape(username) + ";";
 }
 
-exports.createReservation = function(startDate, endDate, totalCost, isCancelled, cardNo, username) {
-	return "INSERT INTO RESERVATION ( Start_date, End_date, Total_cost, Is_cancelled, Card_no, Username ) VALUES ("
+exports.createReservation = function(startDate, endDate, totalCost, isCancelled, cardNo, username, roomArray) { //roomArray = location, room_No, Extra_bed
+	var query =  "INSERT INTO RESERVATION ( Start_date, End_date, Total_cost, Is_cancelled, Card_no, Username ) VALUES ("
 		+ mysql.escape(startDate) + "," + mysql.escape(endDate) + "," + mysql.escape(totalCost) + "," + mysql.escape(isCancelled)
 		+ "," + mysql.escape(cardNo) + "," + mysql.escape(username) + ");";
+
+	query = query + "INSERT INTO HAS_ROOM (Reservation_ID, Extra_bed, Room_no, location) VALUES (@@IDENTITY, ";
+
+	for (var i = 0; i < roomArray.length; i++) {
+
+		var room = roomArray[i];
+
+		query = query + mysql.escape(room.Extra_bed) + ", " + mysql.escape(room.Room_no) + ", " + mysql.escape(room.location)+ ");";
+
+		if (i != roomArray.length - 1) {
+			query = query + " INSERT INTO HAS_ROOM (Reservation_ID, Extra_bed, Room_no, location) VALUES (@@IDENTITY, ";
+		}
+	}
+
+	return query;
 }
 
 exports.cancelReservation = function(reservationID, username) {
-	return "UPDATE RESERVATION SET Is_cancelled = " + mysql.escape(1) + " WHERE Reservation_Id = " + mysql.escape(reservationID)
-			+ " AND username = " + mysql.escape(username) + ";";
-} //need to update this to add a cancellation date
+	return "UPDATE RESERVATION SET Is_cancelled = " + mysql.escape(1) + ", Cancel_date = " + CURDATE()
+			+ " WHERE Reservation_Id = " + mysql.escape(reservationID) + " AND username = " + mysql.escape(username) + ";";
+}
 
 exports.updateReservation = function(reservationID, username, new_Start_date, new_End_date) {
 	return "UPDATE RESERVATION SET  Start_date =  " + mysql.escape(new_Start_date) + ", End_date =  "
@@ -66,7 +81,7 @@ exports.createReviewWithComment = function(comment, rating, location, username) 
 		+ ","+ mysql.escape(rating) + "," + mysql.escape(location) + "," + mysql.escape(username) + ");";
 }
 
-exports.searchRooms = function(roomArray) { //TODO: test this?
+exports.searchRooms = function(roomArray) {
 
 	var query = "SELECT * FROM ROOM WHERE (";
 
