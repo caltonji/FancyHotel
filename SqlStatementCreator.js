@@ -81,7 +81,7 @@ exports.createReviewWithComment = function(comment, rating, location, username) 
 		+ ","+ mysql.escape(rating) + "," + mysql.escape(location) + "," + mysql.escape(username) + ");";
 }
 
-exports.searchRooms = function(roomArray) { //TODO: test this?
+exports.searchRooms = function(roomArray) {
 
 	var query = "SELECT * FROM ROOM WHERE (";
 
