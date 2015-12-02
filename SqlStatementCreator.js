@@ -111,7 +111,15 @@ exports.createPopularRoomReport = function(month_number) { //This will need to b
 		+ " AND Is_cancelled = " + mysql.escape(0) + " GROUP BY location, Room_category) AS sub GROUP BY location;";
 } //Returns tuples in the form (location, Room_category, count)
 
-exports.createRevenueReport = function(month_number) { //This will need to be run once for each month
-	return "SELECT location, SUM(Total_cost) FROM ROOM NATURAL JOIN HAS_ROOM NATURAL JOIN RESERVATION WHERE MONTH(Start_date) = "
-		+ mysql.escape(month_number) + "AND Is_cancelled = " + mysql.escape(0) + " GROUP BY location";
-} //Returns tuples in the form (location, SUM(Total_cost))
+exports.createMonthlyReport = function(month_number, city) { //This will need to be run once for each month and city
+	return "SELECT " + mysql.escape(city) + "AS City, IFNULL(NOREFUND.cost," + mysql.escape(0) + ") + IFNULL(PARTIAL.cost," + mysql.escape(0) + ") + IFNULL(BASE.cost," + mysql.escape(0) + ") AS Revenue"
+		+ "FROM (SELECT SUM( Total_cost ) AS cost"
+			+ "FROM ROOM NATURAL JOIN RESERVATION NATURAL JOIN HAS_ROOM WHERE MONTH( Start_date ) =  " + mysql.escape(month_number) + "AND Is_cancelled = " + mysql.escape(0) 
+			+ "AND Location =" + mysql.escape(city) + ")AS BASE,"
+		+"(SELECT SUM( Total_cost ) *" + mysql.escape(.2) +" AS cost"
+			+"FROM ROOM NATURAL JOIN RESERVATION NATURAL JOIN HAS_ROOM WHERE MONTH( Start_date ) =  " + mysql.escape(month_number) + "AND Is_cancelled = " + mysql.escape(1)
+			+"AND DATEDIFF( Start_date, Cancel_date ) =" + mysql.escape(2) + " OR " + mysql.escape(3) +"AND Location =" + mysql.escape(city) + ") AS PARTIAL, "
+		+"(SELECT SUM( Total_cost ) AS cost"
+			+"FROM ROOM NATURAL JOIN RESERVATION NATURAL JOIN HAS_ROOM WHERE MONTH( Start_date ) =  " + mysql.escape(month_number) + "AND Is_cancelled = " + mysql.escape(1)
+			+"AND DATEDIFF( Start_date, Cancel_date ) <" + mysql.escape(2) + "AND Location =" + mysql.escape(city) + ") AS NOREFUND"
+} //Returns single tuple in the form (city, revenue)
