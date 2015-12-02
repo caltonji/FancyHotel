@@ -57,9 +57,9 @@ exports.createReservation = function(startDate, endDate, totalCost, isCancelled,
 }
 
 exports.cancelReservation = function(reservationID, username) {
-	return "UPDATE RESERVATION SET Is_cancelled = " + mysql.escape(1) + " WHERE Reservation_Id = " + mysql.escape(reservationID)
-			+ " AND username = " + mysql.escape(username) + ";";
-} //need to update this to add a cancellation date
+	return "UPDATE RESERVATION SET Is_cancelled = " + mysql.escape(1) + ", Cancel_date = " + CURDATE()
+			+ " WHERE Reservation_Id = " + mysql.escape(reservationID) + " AND username = " + mysql.escape(username) + ";";
+}
 
 exports.updateReservation = function(reservationID, username, new_Start_date, new_End_date) {
 	return "UPDATE RESERVATION SET  Start_date =  " + mysql.escape(new_Start_date) + ", End_date =  "
