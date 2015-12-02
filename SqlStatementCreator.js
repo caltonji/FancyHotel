@@ -89,10 +89,15 @@ exports.searchRooms = function(roomArray) { //TODO: test this?
 exports.searchAvailableRooms = function(location, start_date, end_date) {
 	return "SELECT * FROM ROOM WHERE LOCATION = " + mysql.escape(location) +" AND NOT EXISTS (SELECT Room_no FROM "
 		+ "HAS_ROOM NATURAL JOIN RESERVATION WHERE ROOM.Room_no = HAS_ROOM.Room_no AND ROOM.location = HAS_ROOM.location "
-		+ "AND RESERVATION.Is_cancelled = " + mysql.escape(0) +" AND ((" + mysql.escape(start_date) + " >= Start_date "
-		+ "AND " + mysql.escape(end_date) + " <= End_Date) OR (" + mysql.escape(start_date) + " >= Start_Date AND "
-		+ mysql.escape(start_date) + " <= End_Date) OR (" + mysql.escape(end_date) + " >= Start_Date AND "
-		+ mysql.escape(end_date) + " <= End_Date)));";
+		+ "AND RESERVATION.Is_cancelled = " + mysql.escape(0) + " AND (( " + mysql.escape(start_date) + " <= End_date AND "
+		+ mysql.escape(end_date) + " >= End_date)));";
+}
+
+exports.searchAvailableUpdate = function(location, room_no, start_date, end_date) {
+	return "SELECT * FROM ROOM NATURAL JOIN HAS_ROOM WHERE ROOM_NO =" + mysql.escape(room_no) + " AND LOCATION = "
+			+ mysql.escape(location) +" AND NOT EXISTS (SELECT Room_no, Extra_bed FROM HAS_ROOM NATURAL JOIN RESERVATION"
+	 		+ " WHERE ROOM.Room_no = HAS_ROOM.Room_no AND ROOM.location = HAS_ROOM.location AND RESERVATION.Is_cancelled"
+			+ "= " + mysql.escape(0) + " AND (( " + mysql.escape(start_date) + " <= End_date AND " + mysql.escape(end_date) + " >= End_date)));";
 }
 
 exports.searchRoomsByID = function(reservationID) {
@@ -112,14 +117,14 @@ exports.createPopularRoomReport = function(month_number) { //This will need to b
 } //Returns tuples in the form (location, Room_category, count)
 
 exports.createMonthlyReport = function(month_number, city) { //This will need to be run once for each month and city
-	return "SELECT " + mysql.escape(city) + "AS City, IFNULL(NOREFUND.cost," + mysql.escape(0) + ") + IFNULL(PARTIAL.cost," + mysql.escape(0) + ") + IFNULL(BASE.cost," + mysql.escape(0) + ") AS Revenue"
-		+ "FROM (SELECT SUM( Total_cost ) AS cost"
-			+ "FROM ROOM NATURAL JOIN RESERVATION NATURAL JOIN HAS_ROOM WHERE MONTH( Start_date ) =  " + mysql.escape(month_number) + "AND Is_cancelled = " + mysql.escape(0) 
-			+ "AND Location =" + mysql.escape(city) + ")AS BASE,"
-		+"(SELECT SUM( Total_cost ) *" + mysql.escape(.2) +" AS cost"
-			+"FROM ROOM NATURAL JOIN RESERVATION NATURAL JOIN HAS_ROOM WHERE MONTH( Start_date ) =  " + mysql.escape(month_number) + "AND Is_cancelled = " + mysql.escape(1)
-			+"AND DATEDIFF( Start_date, Cancel_date ) =" + mysql.escape(2) + " OR " + mysql.escape(3) +"AND Location =" + mysql.escape(city) + ") AS PARTIAL, "
-		+"(SELECT SUM( Total_cost ) AS cost"
-			+"FROM ROOM NATURAL JOIN RESERVATION NATURAL JOIN HAS_ROOM WHERE MONTH( Start_date ) =  " + mysql.escape(month_number) + "AND Is_cancelled = " + mysql.escape(1)
-			+"AND DATEDIFF( Start_date, Cancel_date ) <" + mysql.escape(2) + "AND Location =" + mysql.escape(city) + ") AS NOREFUND"
+	return "SELECT " + mysql.escape(month_number) + "AS Month, " + mysql.escape(city) + " AS City, IFNULL(NOREFUND.cost," + mysql.escape(0) + ") + IFNULL(PARTIAL.cost, " + mysql.escape(0) + ") + IFNULL(BASE.cost," + mysql.escape(0) + ") AS Revenue "
+		+ " FROM (SELECT SUM( Total_cost ) AS cost "
+			+ " FROM ROOM NATURAL JOIN RESERVATION NATURAL JOIN HAS_ROOM WHERE MONTH( Start_date ) =  " + mysql.escape(month_number) + " AND Is_cancelled = " + mysql.escape(0)
+			+ " AND Location =" + mysql.escape(city) + ")AS BASE, "
+		+" (SELECT SUM( Total_cost ) *" + mysql.escape(.2) +" AS cost "
+			+" FROM ROOM NATURAL JOIN RESERVATION NATURAL JOIN HAS_ROOM WHERE MONTH( Start_date ) =  " + mysql.escape(month_number) + " AND Is_cancelled = " + mysql.escape(1)
+			+" AND DATEDIFF( Start_date, Cancel_date ) =" + mysql.escape(2) + " OR " + mysql.escape(3) +" AND Location =" + mysql.escape(city) + ") AS PARTIAL, "
+		+" (SELECT SUM( Total_cost ) AS cost "
+			+" FROM ROOM NATURAL JOIN RESERVATION NATURAL JOIN HAS_ROOM WHERE MONTH( Start_date ) =  " + mysql.escape(month_number) + " AND Is_cancelled = " + mysql.escape(1)
+			+" AND DATEDIFF( Start_date, Cancel_date ) < " + mysql.escape(2) + " AND Location =" + mysql.escape(city) + ") AS NOREFUND"
 } //Returns single tuple in the form (city, revenue)

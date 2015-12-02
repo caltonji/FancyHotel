@@ -65,6 +65,8 @@ exports.fillRoomsForAvailable = function(req, res, callback) {
                 callback();
             }
         });
+    } else {
+        res.redirect('/findRoom')
     }
 }
 
