@@ -83,7 +83,7 @@ exports.postReservationDetails = function(req, res) {
 	var totalCost = parseInt(req.body.totalCost);
 	var isCancelled = 0;
 	var Card_no = req.body.payment_info;
-	console.log("totalCost: " + totalCost + " isCancelled: " + isCancelled + " Card_no: " + Card_no);	
+	console.log("totalCost: " + totalCost + " isCancelled: " + isCancelled + " Card_no: " + Card_no);
 	req.session.last_reservation_id = 12343;
 	res.render('customer/reservationid.ejs', {session : req.session});
 }
@@ -129,9 +129,18 @@ exports.postLookupreservation = function(req, res) {
 
 exports.postCancelreservation = function(req,res) {
 	var cancel_id = req.params.cancel_id;
-	console.log({cancel_id : cancel_id});
-	req.flash('success_message', "You have successfully DELETED your reservation with id: " + cancel_id + ".");
-	res.redirect('/home');
+    var query = sqlCreator.cancelReservation(cancel_id, req.user.Username);
+    connection.query(query, function(err, rows) {
+        if (err) {
+            console.log(err);
+            req.flash('failure_message', "Error Connecting to DB. Try again.");
+            res.redirect('/cancelreservation');
+        } else {
+            console.log({cancel_id : cancel_id});
+            req.flash('success_message', "You have successfully DELETED your reservation with id: " + cancel_id + ".");
+            res.redirect('/home');
+        }
+    })
 }
 
 exports.postGivereview = function(req,res) {
@@ -169,7 +178,7 @@ exports.postGivereview = function(req,res) {
 		});
 	}
 
-	
+
 }
 
 exports.postAddPaymentInfo = function(req, res) {
@@ -213,6 +222,3 @@ exports.postDeletePaymentInfo = function(req, res) {
 		});
 	}
 }
-
-
-

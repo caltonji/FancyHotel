@@ -35,6 +35,7 @@
     <% } %>
 
     <br>
+    <!-- <p><%=JSON.stringify(revenuereports) %></p> -->
     <div class="container">
         <% if (revenuereports.length) { %>
           <table class="w3-table-all" style="width:100%">
@@ -50,8 +51,8 @@
                       <% for (var item in revenuereport) { %>
                         <% var element = revenuereport[item]; %>
                           <td><%= month%></td>
-                          <td><%= element.Location%></td>
-                          <td><%= element.total_revenue%></td>
+                          <td><%= element.City%></td>
+                          <td><%= element.Revenue%></td>
                         </tr>
                     <% } %>
                   <% } %>
@@ -59,7 +60,7 @@
               </table>
               <% } %>
               <br>
-                <button type="submit" class="btn btn-default">View another Report</button>
+                <button type="submit" onclick="javascript:window.location.href='/managerhome';" class="btn btn-default">View another Report</button>
           </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

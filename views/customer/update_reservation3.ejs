@@ -19,7 +19,7 @@
     <!-- Bootstrap -->
     <link href="../stylesheets/bootstrap.min.css" rel="stylesheet">
     <link href="../stylesheets/style.css" rel="stylesheet">
-    
+
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="../js/moment.min.js"></script>
@@ -32,7 +32,7 @@
   </head>
   <body>
     <h1>Update Your Reservation</h1>
-    
+
 
     <!-- show any messages that come back with authentication -->
     <% if (message.length > 0) { %>
@@ -40,12 +40,12 @@
     <% } %>
 
     <br>
-    
+
     <% if (rooms.length > 0 && session.reservation_update_id && reservation.length) { %>
 
     <script>
 
-      // values to keep from the session/from the 
+      // values to keep from the session/from the
       var oldCost = <%= reservation[0].Total_cost %>;
 
       var startDate = "<%= reservation[0].Start_date %>";
@@ -57,7 +57,7 @@
         console.log(days);
         return days;
         // var timeDiff = Math.abs(date2.getTime() - date1.getTime());
-        // return Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+        // return Math.ceil(timeDiff / (1000 * 3600 * 24));
       }
       var diffDays = differenceDays(startDate, endDate);
     </script>
@@ -109,13 +109,13 @@
         <button type="submit" class="btn btn-default">Update Reservation</button>
       </form>
     </div>
-    
-    
+
+
 
     <script>
 
-    $( document ).ready(function() {   
-      
+    $( document ).ready(function() {
+
       var displayCost = function() {
         var totalCost = 0;
         // console.log("diffDays: " + diffDays);
@@ -126,7 +126,7 @@
             roomCost += parseInt($(this).attr('roomcost'));
           // console.log("roomCost: " + roomCost);
           totalCost += roomCost * diffDays;
-        }).promise().done( function() { 
+        }).promise().done( function() {
           $('#new_cost').text(totalCost);
           $('#hiddenNewCostInput').attr('value', totalCost);
         });
@@ -139,7 +139,7 @@
     <% } else { %>
       <h4>No rooms meet your search criteria. <a href="/updatereservation2">Try A different Search</a></h2>
     <% } %>
-    
+
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="../js/bootstrap.min.js"></script>
   </body>
