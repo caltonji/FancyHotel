@@ -25,6 +25,7 @@ var exampleRooms2 = [{ Room_no : 211, Room_category : 'Suite', No_people : 4, Co
 var exampleCards = [{Card_no : 12312341234, Name : "Personal"},
 					{Card_no : 1142243212, Name : "Business"}]
 
+
 exports.postFindRooms = function(req,res) {
 	console.log("startdate: " + req.body.startDate + " end date " + req.body.endDate + " location " + req.body.location);
 	req.session.reservation_startDate = req.body.startDate;
@@ -36,13 +37,31 @@ exports.postFindRooms = function(req,res) {
 // find the rooms by ids and put them in the flash, grab the cards too
 exports.postAvailableRooms = function(req, res) {
 	//FIXME do actual query
-	console.log("entered");
-	var itemsForQuery = getRooms(req.body.select_room);
+	var rooms = getRooms(req.body.select_room);
+    var query = sqlCreator.searchRooms(rooms);
+    console.log(query);
+    if (rooms.length > 0) {
+    	connection.query(query, function(err, rows) {
+	        console.log(rows);
+	        console.log('errors',err);
+	        if (err) {
+	            req.flash('message', 'Problem connecting to DB');
+	            res.redirect('/availablerooms')
+	        } else {
+	            if (rows.length > 0) {
+	                req.flash('rooms', rows)
+	            }
+	            res.redirect('/reservationdetails');
+	        }
+	    });
+    } else {
+    	req.flash('message', 'Please select at least one room.');
+	    res.redirect('/availablerooms')
+    }
+    
 
-	//FIXME: need to use actual query for this
-	console.log(itemsForQuery);
-	req.flash('rooms', exampleRooms2);
-	res.redirect('/reservationdetails');
+	// //FIXME: need to use actual query fo/
+	
 }
 
 
@@ -114,7 +133,7 @@ exports.postUpdatereservation3 = function(req, res) {
 				startDate : startDate,
 				endDate : endDate,
 				rooms : rooms,
-				totalCost : totalCost})
+				totalCost : totalCost});
 	//FIXME: this function is fairly complicated, it needs to
 	//delete old HAS_ROOMS and make new ones and update values
 	req.flash('success_message', "You have successfully updated your reservation with id: " + reservationId + ".");

@@ -43,17 +43,36 @@ exports.fillRoomsFromReservationId = function(req,res) {
     }
 }
 
-exports.fillRoomsFromSessionDates = function(req, res) {
+exports.fillRoomsForAvailable = function(req, res, callback) {
     //set variables in first part the run sql query
     if (req.session.reservation_startDate) {
-        console.log("startdate: " + req.session.reservation_startDate
-                    + " end date " +  req.session.reservation_endDate
-                    + " location " + req.session.reservation_location);
-    } else if (req.session.update_reservation_startDate) {
-        // console.log("");
-    } else return;
-    req.flash('rooms', exampleRooms1);
+        var startDate = req.session.reservation_startDate;
+        var endDate =  req.session.reservation_endDate;
+        var location = req.session.reservation_location;
+        var query = sqlCreator.searchAvailableRooms(location, startDate, endDate);
+        console.log(query);
+
+        connection.query(query, function(err, rows) {
+            console.log(rows);
+            console.log('errors',err);
+            if (err) {
+                req.flash('message', 'Problem connecting to DB');
+                callback();
+            } else {
+                if (rows.length > 0) {
+                    req.flash('rooms', rows)
+                }
+                callback();
+            }
+        });
+    }
 }
+
+exports.fillRoomsForUpdate = function(req,res) {
+    req.flash('rooms', exampleRooms1);
+    
+}
+
 
 exports.fillCardsFromUser = function(req, res, callback) {
     var Username = req.user.Username;
@@ -77,7 +96,6 @@ exports.fillCardsFromUser = function(req, res, callback) {
 }
 
 exports.fillReservationFromUpdate = function(req, res, callback) {
-<<<<<<< HEAD
 	getReservation(req.session.reservation_update_id,req.user.Username, function(reservation) {
 		req.flash('reservation', reservation);
 		callback();
@@ -86,7 +104,7 @@ exports.fillReservationFromUpdate = function(req, res, callback) {
 
 exports.fillReservationFromCancel = function(req, res, callback) {
 	  getReservation(req.session.reservation_cancel_id, req.user.Username, function(reservation) {
-		req.flash('reservation', reservation);
+		req.flash('reservation', exampleReservation);
 		callback();
 	});
 }
@@ -112,4 +130,5 @@ var getReservation = function(reservation_id, username, callback) {
             callback(data);
         }
 
-    })
+    });
+}

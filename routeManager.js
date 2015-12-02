@@ -59,8 +59,9 @@ module.exports = function(app, passport) {
     });
 
     app.get("/availablerooms", isLoggedIn, function(req,res) {
-        flashFills.fillRoomsFromSessionDates(req, res);
-        res.render("customer/make_reservation.ejs", {rooms : req.flash('rooms'),  message: req.flash('reservationMessage'), session : req.session});
+        flashFills.fillRoomsForAvailable(req, res, function() {
+            res.render("customer/make_reservation.ejs", {rooms : req.flash('rooms'),  message: req.flash('message'), session : req.session});
+        });
     });
 
     app.get("/reservationdetails", isLoggedIn, function(req,res) {
@@ -96,7 +97,7 @@ module.exports = function(app, passport) {
 
     app.get("/updatereservation3/:reservation_id", isLoggedIn, function(req,res) {
         req.session.reservation_update_id = req.params.reservation_id;
-        flashFills.fillRoomsFromSessionDates(req, res);
+        flashFills.fillRoomsForUpdate(req, res);
         flashFills.fillReservationFromUpdate(req, res, function() {
             res.render("customer/update_reservation3.ejs", { rooms : req.flash('rooms'), reservation : req.flash('reservation'), message: req.flash('reservationMessage'), session : req.session });
         });
