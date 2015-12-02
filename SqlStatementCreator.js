@@ -35,10 +35,25 @@ exports.findReservation = function(reservationID, username) {
 		+ "AND username = " + mysql.escape(username) + ";";
 }
 
-exports.createReservation = function(startDate, endDate, totalCost, isCancelled, cardNo, username) {
-	return "INSERT INTO RESERVATION ( Start_date, End_date, Total_cost, Is_cancelled, Card_no, Username ) VALUES ("
+exports.createReservation = function(startDate, endDate, totalCost, isCancelled, cardNo, username, roomArray) { //roomArray = location, room_No, Extra_bed
+	var query =  "INSERT INTO RESERVATION ( Start_date, End_date, Total_cost, Is_cancelled, Card_no, Username ) VALUES ("
 		+ mysql.escape(startDate) + "," + mysql.escape(endDate) + "," + mysql.escape(totalCost) + "," + mysql.escape(isCancelled)
 		+ "," + mysql.escape(cardNo) + "," + mysql.escape(username) + ");";
+
+	query = query + "INSERT INTO HAS_ROOM (Reservation_ID, Extra_bed, Room_no, location) VALUES (@@IDENTITY, "
+
+	for (var i = 0; i < roomArray.length; i++) {
+
+		var room = roomArray[i];
+
+		query = query + mysql.escape(room.Extra_bed) + ", " + mysql.escape(room.Room_no) + ", " + mysql.escape(room.location)+ ");";
+
+		if (i != roomArray.length - 1) {
+			query = query + " INSERT INTO HAS_ROOM (Reservation_ID, Extra_bed, Room_no, location) VALUES (@@IDENTITY, ";
+		}
+	}
+
+	return query;
 }
 
 exports.cancelReservation = function(reservationID, username) {
