@@ -30,8 +30,12 @@
     <h1>Reservation Report</h1>
 
     <!-- show any messages that come back with authentication -->
-    <% if (message.length > 0) { %>
-        <div class="alert alert-danger"><%= message %></div>
+    <% if (failure_message.length > 0) { %>
+        <div class="alert alert-danger"><%= failure_message %></div>
+    <% } %>
+
+    <% if (success_message.length > 0) { %>
+        <div class="alert alert-success"><%= success_message %></div>
     <% } %>
 
     <br>

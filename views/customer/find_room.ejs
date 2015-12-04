@@ -21,10 +21,13 @@
     <h1>Search for a Room</h1>
 
     <!-- show any messages that come back with authentication -->
-    <% if (message.length > 0) { %>
-        <div class="alert alert-danger"><%= message %></div>
+    <% if (failure_message.length > 0) { %>
+        <div class="alert alert-danger"><%= failure_message %></div>
     <% } %>
 
+    <% if (success_message.length > 0) { %>
+        <div class="alert alert-success"><%= success_message %></div>
+    <% } %>
     <br>
 
     <div class="container">

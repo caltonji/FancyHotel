@@ -59,7 +59,7 @@ exports.fillReservationreport = function(req, res, callback) {
     console.log(rows);
     console.log(err);
     if (err) {
-      req.flash('message', 'Problem connecting to DB');
+      req.flash('failure_message', 'Problem connecting to DB');
       return;
     } else {
       data.August = rows;
@@ -70,7 +70,7 @@ exports.fillReservationreport = function(req, res, callback) {
       console.log(rows);
       console.log(err);
       if (err) {
-        req.flash('message', 'Problem connecting to DB');
+        req.flash('failure_message', 'Problem connecting to DB');
         return;
       } else {
         data.September = rows;
@@ -89,7 +89,7 @@ exports.fillPopularRoomReport = function(req, res, callback) {
     console.log(rows);
     console.log(err);
     if (err) {
-      req.flash('message', 'Problem connecting to DB');
+      req.flash('failure_message', 'Problem connecting to DB');
       return;
     } else {
       data.August = rows;
@@ -100,7 +100,7 @@ exports.fillPopularRoomReport = function(req, res, callback) {
       console.log(rows);
       console.log(err);
       if (err) {
-        req.flash('message', 'Problem connecting to DB');
+        req.flash('failure_message', 'Problem connecting to DB');
         return;
       } else {
         data.September = rows;

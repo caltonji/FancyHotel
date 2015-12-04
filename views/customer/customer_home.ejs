@@ -19,6 +19,10 @@
   </head>
   <body>
 
+    <% if (failure_message.length > 0) { %>
+        <div class="alert alert-danger"><%= failure_message %></div>
+    <% } %>
+
     <% if (success_message.length > 0) { %>
         <div class="alert alert-success"><%= success_message %></div>
     <% } %>

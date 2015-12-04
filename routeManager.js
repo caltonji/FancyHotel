@@ -18,15 +18,15 @@ module.exports = function(app, passport) {
 
     //authentication get routes
     app.get("/login", function(req,res) {
-        res.render("login.ejs", { message: req.flash('loginMessage') });
+        res.render("login.ejs", { failure_message: req.flash('loginMessage') });
     });
 
     app.get("/managerlogin", function(req,res) {
-        res.render("management_login.ejs", { message: req.flash('loginMessage') });
+        res.render("management_login.ejs", { failure_message: req.flash('loginMessage') });
     });
 
     app.get("/register", function(req,res) {
-        res.render('registration.ejs', { message: req.flash('signupMessage') });
+        res.render('registration.ejs', { failure_message: req.flash('signupMessage') });
     });
 
     //authentication post routes
@@ -51,27 +51,23 @@ module.exports = function(app, passport) {
 
     //customer get routes
     app.get("/home", isLoggedIn, function(req,res) {
-        res.render("customer/customer_home.ejs", { success_message : req.flash('success_message'), username: req.user.Username});
+        res.render("customer/customer_home.ejs", { success_message : req.flash('success_message'), failure_message : req.flash('failure_message'), username: req.user.Username});
     });
 
     app.get("/findRoom", isLoggedIn, function(req,res) {
-        res.render("customer/find_room.ejs", { message: req.flash('reservationMessage') });
+        res.render("customer/find_room.ejs", { success_message : req.flash('success_message'), failure_message : req.flash('failure_message')});
     });
 
     app.get("/availablerooms", isLoggedIn, function(req,res) {
         flashFills.fillRoomsForAvailable(req, res, function() {
-            res.render("customer/make_reservation.ejs", {rooms : req.flash('rooms'),  message: req.flash('message'), session : req.session});
+            res.render("customer/make_reservation.ejs", {rooms : req.flash('rooms'),  success_message : req.flash('success_message'), failure_message : req.flash('failure_message'), session : req.session});
         });
     });
 
     app.get("/reservationdetails", isLoggedIn, function(req,res) {
         flashFills.fillCardsFromUser(req, res, function() {
-            res.render("customer/reservation_details.ejs", {cards : req.flash('cards'), rooms : req.flash('rooms'), message: req.flash('reservationMessage'), session : req.session });
+            res.render("customer/reservation_details.ejs", {cards : req.flash('cards'), rooms : req.flash('rooms'),success_message : req.flash('success_message'), failure_message : req.flash('failure_message'), session : req.session });
         });
-    });
-
-    app.get("/updatereservation1", isLoggedIn, function(req,res) {
-        res.render("customer/update_reservation1.ejs", { message: req.flash('reservationMessage') });
     });
 
     app.get("/paymentinfo", isLoggedIn, function(req,res) {
@@ -81,13 +77,17 @@ module.exports = function(app, passport) {
     });
 
     app.get("/updatereservation1", isLoggedIn, function(req,res) {
-        res.render("customer/update_reservation1.ejs", { message: req.flash('reservationMessage') } );
+        res.render("customer/update_reservation1.ejs", { success_message: req.flash('success_message'), failure_message : req.flash('failure_message') } );
     });
 
     app.get("/updatereservation2/:reservation_id", isLoggedIn, function(req,res) {
         req.session.reservation_update_id = req.params.reservation_id;
-        flashFills.fillReservationFromUpdate(req, res, function() {
-            res.render("customer/update_reservation2.ejs", { reservation : req.flash('reservation'), message: req.flash('reservationMessage') });
+        flashFills.fillReservationFromUpdate(req, res, function(valid) {
+            if (valid) {
+                res.render("customer/update_reservation2.ejs", { reservation : req.flash('reservation'), success_message : req.flash('success_message'), failure_message : req.flash('failure_message') });
+            } else {
+                res.redirect('/updatereservation1');
+            }
         });
     });
 
@@ -97,9 +97,16 @@ module.exports = function(app, passport) {
 
     app.get("/updatereservation3/:reservation_id", isLoggedIn, function(req,res) {
         req.session.reservation_update_id = req.params.reservation_id;
-        flashFills.fillRoomsForUpdate(req, res);
+
         flashFills.fillReservationFromUpdate(req, res, function() {
-            res.render("customer/update_reservation3.ejs", { rooms : req.flash('rooms'), reservation : req.flash('reservation'), message: req.flash('reservationMessage'), session : req.session });
+            flashFills.fillRoomsForUpdate(req, res, function(roomsExist) {
+                if (roomsExist) {
+                    res.render("customer/update_reservation3.ejs", { rooms : req.flash('rooms'), reservation : req.flash('reservation'), success_message : req.flash('success_message'), failure_message : req.flash('failure_message'), session : req.session });
+                } else {
+                    req.flash('failure_message', "Your rooms are not available during those dates. You can cancel your reservation and make a new one.");
+                    res.redirect('/updatereservation2/' + req.session.reservation_update_id);
+                }
+            });
         });
     });
 
@@ -108,16 +115,23 @@ module.exports = function(app, passport) {
     });
 
     app.get("/lookupreservation", isLoggedIn, function(req, res) {
-        res.render("customer/lookup_reservation");
+        res.render("customer/lookup_reservation", {success_message : req.flash('success_message'), failure_message : req.flash('failure_message')});
     })
 
     app.get("/cancelreservation/:cancel_id", isLoggedIn, function(req,res) {
         req.session.reservation_cancel_id = req.params.cancel_id;
-        flashFills.fillRoomsFromCancelReservationId(req, res, function() {
-            flashFills.fillReservationFromCancel(req, res, function() {
-                res.render("customer/cancel_reservation.ejs", { reservation : req.flash('reservation'), rooms : req.flash('rooms'), message: req.flash('reservationMessage'), session : req.session });
-            });
+        flashFills.fillReservationFromCancel(req, res, function(valid) {
+            if (!valid) {
+                res.redirect('/lookupreservation');
+            } else {
+                flashFills.fillRoomsFromCancelReservationId(req, res, function(valid) {
+                    res.render("customer/cancel_reservation.ejs", { reservation : req.flash('reservation'), rooms : req.flash('rooms'), success_message : req.flash('success_message'), failure_message : req.flash('failure_message'), session : req.session });
+                });
+            }
         });
+
+
+        
     });
 
     app.get("/cancelreservation", isLoggedIn, function(req,res) {
@@ -126,34 +140,34 @@ module.exports = function(app, passport) {
 
     app.get("/viewreview", isLoggedIn, function(req,res) {
         flashFills.fillReviews(req,res, function() {
-            res.render("customer/view_review.ejs", { location : req.query.location, reviews : req.flash('reviews'), failure_message: req.flash('failure_message') });
+            res.render("customer/view_review.ejs", { location : req.query.location, reviews : req.flash('reviews'), success_message : req.flash('success_message'), failure_message : req.flash('failure_message') });
         });
     });
 
     app.get("/givereview", isLoggedIn, function(req,res) {
-        res.render("customer/give_review.ejs", { failure_message: req.flash('failure_message') });
+        res.render("customer/give_review.ejs", { success_message : req.flash('success_message'), failure_message : req.flash('failure_message') });
     });
 
     //manager get routes
     app.get('/managerhome', isLoggedIn, function(req, res) {
-        res.render("manager/manager_home.ejs", {username : req.user.Username});
+        res.render("manager/manager_home.ejs", {username : req.user.Username, success_message : req.flash('success_message'), failure_message : req.flash('failure_message')});
     });
 
     app.get("/reservationreport", isLoggedIn, function(req,res) {
         managerFlashFills.fillReservationreport(req,res,function(){
-            res.render("manager/reservation_report.ejs", { reservationreports : req.flash('reservationreports'),message: req.flash('message') });
+            res.render("manager/reservation_report.ejs", { reservationreports : req.flash('reservationreports'), success_message : req.flash('success_message'), failure_message : req.flash('failure_message') });
         });
     });
 
     app.get("/poproomreport", isLoggedIn, function(req,res) {
         managerFlashFills.fillPopularRoomReport(req,res, function() {
-            res.render("manager/popularRoom_report.ejs", { roomcatreports : req.flash('roomcatreports'), message: req.flash('reservationMessage') });
+            res.render("manager/popularRoom_report.ejs", { roomcatreports : req.flash('roomcatreports'), success_message : req.flash('success_message'), failure_message : req.flash('failure_message') });
         });
     });
 
     app.get("/revenuereport", isLoggedIn, function(req,res) {
         managerFlashFills.fillRevenueReport(req,res, function() {
-            res.render("manager/revenue_report.ejs", { revenuereports: req.flash('revenuereports'), message: req.flash('message') });
+            res.render("manager/revenue_report.ejs", { revenuereports: req.flash('revenuereports'), success_message : req.flash('success_message'), failure_message : req.flash('failure_message') });
         });
     });
 

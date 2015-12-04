@@ -35,15 +35,12 @@
     <P> We're sad to see you have to cancel your stay at Fancy Hotels. Please confirm details below before submitting. <p>
 
     <!-- show any messages that come back with authentication -->
-    <% if (message.length > 0) { %>
-        <div class="alert alert-danger"><%= message %></div>
+    <% if (failure_message.length > 0) { %>
+        <div class="alert alert-danger"><%= failure_message %></div>
     <% } %>
 
-    <br>
-
-
-    <% if (message.length > 0) { %>
-        <div class="alert alert-danger"><%= message %></div>
+    <% if (success_message.length > 0) { %>
+        <div class="alert alert-success"><%= success_message %></div>
     <% } %>
 
     <br>
@@ -89,22 +86,20 @@
             <th>Room Category</th>
             <th># Persons Allowed</th>
             <th>Cost per Day</th>
-            <!-- <th>Cost of Extra Bed per Day</th>
-            <th>Extra Bed</th> -->
+            <th>Cost of Extra Bed per Day</th>
+            <th>Extra Bed</th>
           </tr>
         <% for (var i in rooms) { %>
           <% var room = rooms[i]; %>
-          <tr class="available_room" roomcost="<%= room.Cost_day %>">
+          <tr class="available_room">
+            <% var Extra_bed; if (room.Extra_bed == 1) Extra_bed = "Yes"; else Extra_bed = "No"; %>
             <td><%= room.Location %></td>
             <td><%= room.Room_no %></td>
             <td><%= room.Room_category %></td>
             <td><%= room.No_people %></td>
             <td><%= room.Cost_day %></td>
-            <td><%= room.Cost_extra_bed_day %></td>
-            <!-- <td>
-              <!-- This is not an easy problem to fix -->
-              <!-- Yes -->
-            <!-- </td> -->
+            <td><%= room.Cost_of_extra_bed_per_day %></td>
+            <td><%= Extra_bed %></td>
           </tr>
         <% } %>
         </tbody>

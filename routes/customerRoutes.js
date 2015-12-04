@@ -9,7 +9,8 @@ var connection = mysql.createConnection({
   host: "academic-mysql.cc.gatech.edu",
   user: "cs4400_Group_6",
   password: "tEVtJmV_",
-  database : "cs4400_Group_6"
+  database : "cs4400_Group_6",
+  multipleStatements : true
 });
 //just never let the connection
 connection.connect()
@@ -46,7 +47,7 @@ exports.postAvailableRooms = function(req, res) {
 	        console.log(rows);
 	        console.log('errors',err);
 	        if (err) {
-	            req.flash('message', 'Problem connecting to DB');
+	            req.flash('failure_message', 'Problem connecting to DB');
 	            res.redirect('/availablerooms')
 	        } else {
 	            if (rows.length > 0) {
@@ -57,48 +58,13 @@ exports.postAvailableRooms = function(req, res) {
 	        }
 	    });
     } else {
-    	req.flash('message', 'Please select at least one room.');
+    	req.flash('failure_message', 'Please select at least one room.');
 	    res.redirect('/availablerooms')
     }
     
 
 	// //FIXME: need to use actual query fo/
 	
-}
-
-
-
-var getRooms = function(select_room) {
-	var items;
-	if (!select_room) {
-		//nothing selected
-	} else if (!Array.isArray(select_room)) {
-		//is one item
-		items = [select_room];
-	} else {
-		// is multiple item
-		items = select_room;
-	}
-	var itemsForQuery = [];
-	for (var i in items) {
-		itemsForQuery.push(getRoom(items[i]));
-	}
-	return itemsForQuery;
-}
-
-var getRoom = function(RoomnoLocation) {
-	var arr = RoomnoLocation.split(" ");
-	return {location : arr[1], Room_no : parseInt(arr[0])}
-}
-
-var roomIsChecked = function(room, checked_rooms) {
-	for (var key in checked_rooms) {
-		var room2 = checked_rooms[key];
-		if (room.Room_no == room2.Room_no && room.location == room2.location) {
-			return true;
-		}
-	}
-	return false;
 }
 
 exports.postReservationDetails = function(req, res) {
@@ -143,12 +109,12 @@ exports.postReservationDetails = function(req, res) {
 			} else {
 				console.log(rows);
 
-				req.session.last_reservation_id = 12343;
+				req.session.last_reservation_id = rows[2][0]['@reservation_id'];
 				res.render('customer/reservationid.ejs', {session : req.session});
 			}
 		});
 	} else {
-		req.flash('message', "Oops. Something went wrong, try again.");
+		req.flash('failure_message', "Oops. Something went wrong, try again.");
 		res.redirect('/reservationdetails');
 	}
 }
@@ -170,32 +136,38 @@ exports.postUpdatereservation2 = function(req, res) {
 
 exports.postUpdatereservation3 = function(req, res) {
 	//default extra bed to no and let that update later also
-	var reservationId = req.session.reservation_update_id;
+	var reservationId = parseInt(req.session.reservation_update_id);
 	var startDate = req.session.update_reservation_startDate;
 	var endDate = req.session.update_reservation_endDate;
-	var rooms = getRooms(req.body.select_room);
+	var username = req.user.Username;
 	var totalCost = parseInt(req.body.totalCost);
 
 	//just printing quickly
 	console.log({ reservationId : reservationId,
 				startDate : startDate,
 				endDate : endDate,
-				rooms : rooms,
 				totalCost : totalCost});
-	//FIXME: this function is fairly complicated, it needs to
-	//delete old HAS_ROOMS and make new ones and update values
-	req.flash('success_message', "You have successfully updated your reservation with id: " + reservationId + ".");
-	res.redirect('/home');
+	var query = sqlCreator.updateReservation(reservationId, username, startDate, endDate, totalCost);
+	connection.query(query, function(err, rows) {
+        if (err) {
+            console.log(err);
+            req.flash('failure_message', "Error Connecting to DB. Try again.");
+            res.redirect('/updatereservation3');
+        } else {
+            req.flash('success_message', "You have successfully Updated your reservation with id: " + reservationId + ".");
+            res.redirect('/home');
+        }
+    });
 }
 
 exports.postLookupreservation = function(req, res) {
-	var cancel_id = req.body.Reservation_ID;
+	var cancel_id = parseInt(req.body.Reservation_ID);
 	console.log({cancel_id : cancel_id});
 	res.redirect("/cancelreservation/" + cancel_id);
 }
 
 exports.postCancelreservation = function(req,res) {
-	var cancel_id = req.params.cancel_id;
+	var cancel_id = parseInt(req.params.cancel_id);
     var query = sqlCreator.cancelReservation(cancel_id, req.user.Username);
     connection.query(query, function(err, rows) {
         if (err) {
@@ -207,7 +179,7 @@ exports.postCancelreservation = function(req,res) {
             req.flash('success_message', "You have successfully DELETED your reservation with id: " + cancel_id + ".");
             res.redirect('/home');
         }
-    })
+    });
 }
 
 exports.postGivereview = function(req,res) {
@@ -289,3 +261,40 @@ exports.postDeletePaymentInfo = function(req, res) {
 		});
 	}
 }
+
+
+
+//helpers
+var getRooms = function(select_room) {
+	var items;
+	if (!select_room) {
+		//nothing selected
+	} else if (!Array.isArray(select_room)) {
+		//is one item
+		items = [select_room];
+	} else {
+		// is multiple item
+		items = select_room;
+	}
+	var itemsForQuery = [];
+	for (var i in items) {
+		itemsForQuery.push(getRoom(items[i]));
+	}
+	return itemsForQuery;
+}
+
+var getRoom = function(RoomnoLocation) {
+	var arr = RoomnoLocation.split(" ");
+	return {location : arr[1], Room_no : parseInt(arr[0])}
+}
+
+var roomIsChecked = function(room, checked_rooms) {
+	for (var key in checked_rooms) {
+		var room2 = checked_rooms[key];
+		if (room.Room_no == room2.Room_no && room.location == room2.location) {
+			return true;
+		}
+	}
+	return false;
+}
+

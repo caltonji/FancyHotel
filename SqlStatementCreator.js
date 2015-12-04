@@ -35,12 +35,20 @@ exports.findReservation = function(reservationID, username) {
 		+ " AND username = " + mysql.escape(username) + ";";
 }
 
+exports.findValidReservation = function(reservationID, username) {
+	return "SELECT * FROM RESERVATION WHERE Reservation_ID = " + mysql.escape(reservationID)
+		+ " AND username = " + mysql.escape(username) + " AND Is_cancelled= 0;";
+}
+
 exports.createReservation = function(startDate, endDate, totalCost, isCancelled, cardNo, username, roomArray) { //roomArray = location, room_No, Extra_bed
 	var query =  "INSERT INTO RESERVATION ( Start_date, End_date, Total_cost, Is_cancelled, Card_no, Username ) VALUES ("
 		+ mysql.escape(startDate) + "," + mysql.escape(endDate) + "," + mysql.escape(totalCost) + "," + mysql.escape(isCancelled)
 		+ "," + mysql.escape(cardNo) + "," + mysql.escape(username) + ");";
+	
+	query = query + "SET @reservation_id = (SELECT MAX(Reservation_ID) FROM RESERVATION);";
+	query = query + "SELECT @reservation_id;";
 
-	query = query + " INSERT INTO HAS_ROOM (Reservation_ID, Extra_bed, Room_no, location) VALUES (@@IDENTITY, ";
+	query = query + " INSERT INTO HAS_ROOM (Reservation_ID, Extra_bed, Room_no, location) VALUES (@reservation_id, ";
 
 	for (var i = 0; i < roomArray.length; i++) {
 
@@ -49,26 +57,26 @@ exports.createReservation = function(startDate, endDate, totalCost, isCancelled,
 		query = query + mysql.escape(room.Extra_bed) + ", " + mysql.escape(room.Room_no) + ", " + mysql.escape(room.location)+ "); ";
 
 		if (i != roomArray.length - 1) {
-			query = query + " INSERT INTO HAS_ROOM (Reservation_ID, Extra_bed, Room_no, location) VALUES (@@IDENTITY, ";
+			query = query + " INSERT INTO HAS_ROOM (Reservation_ID, Extra_bed, Room_no, location) VALUES (@reservation_id, ";
 		}
 	}
-
+	query = query + "SELECT @reservation_id;";
 	return query;
 }
 
 exports.cancelReservation = function(reservationID, username) {
-	return "UPDATE RESERVATION SET Is_cancelled = " + mysql.escape(1) + ", Cancel_date = " + CURDATE()
+	return "UPDATE RESERVATION SET Is_cancelled = " + mysql.escape(1) + ", Cancel_date = CURDATE()"
 			+ " WHERE Reservation_Id = " + mysql.escape(reservationID) + " AND username = " + mysql.escape(username) + ";";
 }
 
-exports.updateReservation = function(reservationID, username, new_Start_date, new_End_date) {
+exports.updateReservation = function(reservationID, username, new_Start_date, new_End_date, total_Cost) {
 	return "UPDATE RESERVATION SET  Start_date =  " + mysql.escape(new_Start_date) + ", End_date =  "
-		+ mysql.escape(new_End_date) + " WHERE  Reservation_ID = " + mysql.escape(reservationID) + " AND username = "
+		+ mysql.escape(new_End_date) + ", Total_cost = " + mysql.escape(total_Cost) + " WHERE  Reservation_ID = " + mysql.escape(reservationID) + " AND username = "
 		+ mysql.escape(username) + ";";
 }
 
 exports.findReviews = function(location) {
-	return "SELECT Rating, Comment FROM HOTEL_REVIEW WHERE Location = " + mysql.escape(location) + ";";
+	return "SELECT Rating, Comment FROM HOTEL_REVIEW WHERE Location = " + mysql.escape(location) + " ORDER BY Review_no DESC;";
 }
 
 exports.createReviewNoComment = function(rating, location, username) {
@@ -108,11 +116,15 @@ exports.searchAvailableRooms = function(location, start_date, end_date) {
 		+ mysql.escape(end_date) + " >= End_date)));";
 }
 
-exports.searchAvailableUpdate = function(location, room_no, start_date, end_date) {
-	return "SELECT * FROM ROOM NATURAL JOIN HAS_ROOM WHERE ROOM_NO =" + mysql.escape(room_no) + " AND LOCATION = "
-			+ mysql.escape(location) +" AND NOT EXISTS (SELECT Room_no, Extra_bed FROM HAS_ROOM NATURAL JOIN RESERVATION"
-	 		+ " WHERE ROOM.Room_no = HAS_ROOM.Room_no AND ROOM.location = HAS_ROOM.location AND RESERVATION.Is_cancelled"
-			+ "= " + mysql.escape(0) + " AND (( " + mysql.escape(start_date) + " <= End_date AND " + mysql.escape(end_date) + " >= End_date)));";
+exports.searchAvailableUpdate = function(location, room_no, start_date, end_date, reservation_id) {
+	return "SELECT * FROM ROOM NATURAL JOIN HAS_ROOM WHERE ROOM_NO = " + mysql.escape(room_no) + " AND LOCATION = "
+		+ mysql.escape(location) +" AND Reservation_ID= " + mysql.escape(reservation_id) + " AND NOT EXISTS "
+		+ "(SELECT Room_no, Extra_bed FROM HAS_ROOM NATURAL JOIN RESERVATION WHERE ROOM.Room_no = HAS_ROOM.Room_no "
+		+ "AND ROOM.location = HAS_ROOM.location AND RESERVATION.Is_cancelled= 0 AND RESERVATION.Reservation_ID != " + mysql.escape(reservation_id)
+		+ " AND ((Start_date <= " + mysql.escape(start_date) + " AND " + mysql.escape(start_date) + " <= End_date)"
+		+ " OR (Start_date <= " + mysql.escape(end_date) + " AND " + mysql.escape(end_date) + " <= End_date)"
+		+ "OR (" + mysql.escape(start_date) + " <= Start_date AND End_date <= " + mysql.escape(end_date) + ")));";
+
 }
 
 exports.searchRoomsByID = function(reservationID) {

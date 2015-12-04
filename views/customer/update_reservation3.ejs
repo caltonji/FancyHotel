@@ -35,8 +35,12 @@
 
 
     <!-- show any messages that come back with authentication -->
-    <% if (message.length > 0) { %>
-        <div class="alert alert-danger"><%= message %></div>
+    <% if (failure_message.length > 0) { %>
+        <div class="alert alert-danger"><%= failure_message %></div>
+    <% } %>
+
+    <% if (success_message.length > 0) { %>
+        <div class="alert alert-success"><%= success_message %></div>
     <% } %>
 
     <br>
@@ -48,8 +52,8 @@
       // values to keep from the session/from the
       var oldCost = <%= reservation[0].Total_cost %>;
 
-      var startDate = "<%= reservation[0].Start_date %>";
-      var endDate = "<%= reservation[0].End_date %>";
+      var startDate = "<%= session.update_reservation_startDate %>";
+      var endDate = "<%=session.update_reservation_endDate %>";
       var differenceDays = function(date1, date2) {
         var mdate1 = moment(date1);
         var mdate2 = moment(date2);
@@ -81,19 +85,19 @@
             <th># Persons Allowed</th>
             <th>Cost per Day</th>
             <th>Cost of Extra Bed per Day</th>
-            <th>Select Room</th>
+            <th>Extra Bed</th>
           </tr>
         <% for (var i in rooms) { %>
           <% var room = rooms[i]; %>
-          <tr class="available_room" roomcost="<%= room.Cost_day %>">
+          <% var Extra_bed; if (room.Extra_bed == 1) Extra_bed = "Yes"; else Extra_bed = "No"; %>
+          <% var roomCost = parseInt(room.Cost_day); if (Extra_bed == "Yes") roomCost += parseInt(room.Cost_of_extra_bed_per_day); %>
+          <tr class="available_room" roomcost="<%= roomCost %>">
             <td><%= room.Room_no %></td>
             <td><%= room.Room_category %></td>
             <td><%= room.No_people %></td>
             <td><%= room.Cost_day %></td>
-            <td><%= room.Cost_extra_bed_day %></td>
-            <td>
-              <input class="checkbox" type="checkbox" name="select_room" value="<%= room.Room_no%> <%= room.location %>"><br>
-            </td>
+            <td><%= room.Cost_of_extra_bed_per_day %></td>
+            <td><%= Extra_bed %></td>
           </tr>
         <% } %>
         </tbody>
@@ -122,8 +126,8 @@
         $("tr.available_room").each(function () {
           var roomCost = 0
           // roomCost += parseInt($(this).attr('roomcost'));
-          if ($(this).find('input.checkbox').is(':checked'))
-            roomCost += parseInt($(this).attr('roomcost'));
+          //if ($(this).find('input.checkbox').is(':checked'))
+          roomCost += parseInt($(this).attr('roomcost'));
           // console.log("roomCost: " + roomCost);
           totalCost += roomCost * diffDays;
         }).promise().done( function() {
@@ -132,12 +136,12 @@
         });
       }
       displayCost();
-      $("input.checkbox").change(displayCost);
+      // $("input.checkbox").change(displayCost);
     });
     </script>
 
     <% } else { %>
-      <h4>No rooms meet your search criteria. <a href="/updatereservation2">Try A different Search</a></h2>
+      <h4>Your rooms are not available for these dates. <a href="/updatereservation2">Try A different Date</a></h2>
     <% } %>
 
     <!-- Include all compiled plugins (below), or include individual files as needed -->

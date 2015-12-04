@@ -20,10 +20,14 @@
   <body>
     <h1>Update Your Reservation</h1>
     <p>Please enter your reservation ID to update an existing reservation.<p>
-
+  
     <!-- show any messages that come back with authentication -->
-    <% if (message.length > 0) { %>
-        <div class="alert alert-danger"><%= message %></div>
+    <% if (failure_message.length > 0) { %>
+        <div class="alert alert-danger"><%= failure_message %></div>
+    <% } %>
+
+    <% if (success_message.length > 0) { %>
+        <div class="alert alert-success"><%= success_message %></div>
     <% } %>
 
     <div class="container">

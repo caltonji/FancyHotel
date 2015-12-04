@@ -21,6 +21,15 @@
     <h1>Lookup Reservation To Cancel</h1>
     <p>Please enter your reservation ID for an existing reservation.<p>
 
+    <!-- show any messages that come back with authentication -->
+    <% if (failure_message.length > 0) { %>
+        <div class="alert alert-danger"><%= failure_message %></div>
+    <% } %>
+
+    <% if (success_message.length > 0) { %>
+        <div class="alert alert-success"><%= success_message %></div>
+    <% } %>
+
     <div class="container">
       <form class="form-horizontal" role="form" method='post'>
       <div class="form-group">
